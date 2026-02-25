@@ -85,9 +85,16 @@ export default function HeroSection() {
               <span className="font-mono text-[11px] text-[#666]">Phase 0.9 — Agent Runtime MVP</span>
             </div>
 
-            <h1 className="font-display text-[42px] sm:text-[56px] lg:text-[64px] font-bold text-white leading-[1.05] tracking-[-0.02em]">
-              Harbinger
-            </h1>
+            <div className="flex items-center gap-4 mb-1">
+              <img
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663114013319/TAqStkfvjTyDDNXQ.png"
+                alt="Harbinger"
+                className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-contain"
+              />
+              <h1 className="font-display text-[42px] sm:text-[56px] lg:text-[64px] font-bold text-white leading-[1.05] tracking-[-0.02em]">
+                Harbinger
+              </h1>
+            </div>
             <p className="mt-2 text-[17px] sm:text-[19px] text-[#00d4ff] font-display font-medium tracking-tight">
               Local-first autonomous offensive security OS
             </p>

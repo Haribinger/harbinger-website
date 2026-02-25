@@ -5,9 +5,11 @@ export default function Footer() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 rounded bg-[#00d4ff]/10 border border-[#00d4ff]/20 flex items-center justify-center">
-                <span className="font-display font-bold text-[#00d4ff] text-[10px]">H</span>
-              </div>
+              <img
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663114013319/TAqStkfvjTyDDNXQ.png"
+                alt="Harbinger"
+                className="w-6 h-6 object-contain"
+              />
               <span className="font-display font-semibold text-white text-[14px]">Harbinger</span>
             </div>
             <p className="text-[12px] text-[#555] leading-relaxed">

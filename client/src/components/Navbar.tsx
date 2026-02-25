@@ -43,9 +43,11 @@ export default function Navbar() {
           onClick={(e) => { e.preventDefault(); go("#hero"); }}
           className="flex items-center gap-2 group"
         >
-          <div className="w-7 h-7 rounded bg-[#00d4ff]/10 border border-[#00d4ff]/20 flex items-center justify-center">
-            <span className="font-display font-bold text-[#00d4ff] text-xs">H</span>
-          </div>
+          <img
+            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663114013319/TAqStkfvjTyDDNXQ.png"
+            alt="Harbinger"
+            className="w-7 h-7 object-contain"
+          />
           <span className="font-display font-semibold text-[15px] text-white tracking-tight">
             Harbinger
           </span>
