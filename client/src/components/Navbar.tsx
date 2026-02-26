@@ -6,10 +6,10 @@ const navLinks = [
   { label: "About", href: "#about" },
   { label: "Architecture", href: "#architecture" },
   { label: "Features", href: "#features" },
+  { label: "Security", href: "#security" },
+  { label: "Install", href: "#quickstart" },
   { label: "Comparison", href: "#comparison" },
   { label: "Roadmap", href: "#roadmap" },
-  { label: "Stack", href: "#techstack" },
-  { label: "Plugins", href: "#community" },
   { label: "Ecosystem", href: "#ecosystem" },
 ];
 
@@ -77,11 +77,16 @@ export default function Navbar() {
             GitHub
           </a>
           <a
-            href="#about"
-            onClick={(e) => { e.preventDefault(); go("#about"); }}
+            href="/docs"
+            className="hidden sm:inline-flex px-3 py-1.5 text-[13px] text-[#888] hover:text-white transition-colors"
+          >
+            Docs
+          </a>
+          <a
+            href="/login"
             className="hidden sm:inline-flex px-4 py-1.5 text-[13px] font-medium bg-white text-black rounded hover:bg-white/90 transition-colors"
           >
-            Get Started
+            Sign In
           </a>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}

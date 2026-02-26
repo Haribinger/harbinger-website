@@ -82,7 +82,7 @@ export default function HeroSection() {
           <div>
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-white/[0.06] bg-white/[0.02] mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
-              <span className="font-mono text-[11px] text-[#666]">Phase 0.9 — Agent Runtime MVP</span>
+              <span className="font-mono text-[11px] text-[#666]">v1.0 — Production Ready</span>
             </div>
 
             <div className="flex items-center gap-4 mb-1">
@@ -100,7 +100,8 @@ export default function HeroSection() {
             </p>
             <p className="mt-5 text-[15px] text-[#777] leading-[1.7] max-w-md">
               Multi-agent workflow orchestration with 150+ security tools via MCP.
-              Observable, auditable, fully local. No black boxes. No cloud dependencies.
+              9 Docker services, 6 specialized agents, 14 UI pages.
+              Observable, auditable, fully local. No black boxes.
             </p>
 
             <div className="flex flex-wrap gap-3 mt-8">
@@ -126,8 +127,9 @@ export default function HeroSection() {
             <div className="flex gap-10 mt-12 pt-8 border-t border-white/[0.04]">
               {[
                 { val: "150+", label: "Security Tools" },
-                { val: "100%", label: "Local-First" },
-                { val: "MCP", label: "Native Protocol" },
+                { val: "6", label: "AI Agents" },
+                { val: "9", label: "Docker Services" },
+                { val: "14", label: "UI Pages" },
               ].map((s) => (
                 <div key={s.label}>
                   <div className="font-display text-xl font-bold text-white">{s.val}</div>

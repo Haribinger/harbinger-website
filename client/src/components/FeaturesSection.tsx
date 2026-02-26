@@ -9,18 +9,18 @@ interface Feature {
 }
 
 const features: Feature[] = [
-  { icon: Users, title: "Multi-Agent Swarm", desc: "Specialized agents — recon, web, binary, cloud, OSINT — collaborate through formal handoff protocols and shared context." },
-  { icon: Workflow, title: "Workflow Graph Engine", desc: "Directed graph execution with parallel branches, conditions, approvals, handoffs, and retry logic." },
-  { icon: Terminal, title: "150+ Security Tools", desc: "Nmap, SQLMap, Nuclei, Subfinder, httpx, Prowler, and 140+ more — all via MCP protocol." },
-  { icon: Network, title: "MCP-First Architecture", desc: "Every tool exposed via Model Context Protocol. Compatible with Claude Desktop, Cursor, and any MCP client." },
-  { icon: Eye, title: "Observable by Design", desc: "Real-time event streams, timeline views, graph views, artifact downloads, cost tracking. No black boxes." },
-  { icon: Lock, title: "100% Local-First", desc: "Runs entirely on Docker with Ollama or LM Studio. Zero mandatory cloud APIs. Your data stays yours." },
+  { icon: Users, title: "Multi-Agent Swarm", desc: "6 specialized agents — PATHFINDER (recon), BREACH (web), CIPHER (binary), PHANTOM (cloud), SPECTER (OSINT), SCRIBE (reports) — collaborate through formal handoff protocols." },
+  { icon: Workflow, title: "Workflow Graph Engine", desc: "Visual directed graph editor with parallel branches, conditions, approvals, handoffs, and retry logic. Built on @xyflow/react." },
+  { icon: Terminal, title: "150+ Security Tools", desc: "Nuclei, SQLMap, Subfinder, httpx, Prowler, Nikto, dirsearch, and 140+ more — all via 4 MCP plugin servers." },
+  { icon: Network, title: "MCP-First Architecture", desc: "HexStrike, PentAGI, RedTeam, and MCP-UI servers. Compatible with Claude Desktop, Cursor, and any MCP client." },
+  { icon: Eye, title: "Observable by Design", desc: "14 dashboard pages, real-time WebSocket event streams, agent timeline views, graph views, cost tracking. No black boxes." },
+  { icon: Lock, title: "100% Local-First", desc: "9 Docker services, pgvector, Redis, Neo4j. Runs entirely local with Ollama or LM Studio. Your data stays yours." },
   { icon: GitBranch, title: "Git Memory", desc: "Every significant event committed to a Git repo. Full auditability, replay, and GitHub Actions compute." },
-  { icon: Shield, title: "Cost Governance", desc: "Max token budgets, runtime limits, tool invocation caps, Docker resource controls, concurrency limits." },
-  { icon: Box, title: "Docker Isolation", desc: "Each tool runs in a fresh container with resource limits and network isolation. No tool can escape its sandbox." },
-  { icon: Zap, title: "Plugin SDK", desc: "Extend with custom tools, agents, channels, workflows, and report templates. Drop-in plugin architecture." },
+  { icon: Shield, title: "Production Security", desc: "OAuth CSRF protection, TOTP verification, JWT auth, error sanitization, Docker action whitelist, rate limiting, request body limits." },
+  { icon: Box, title: "Docker Isolation", desc: "Each agent runs in a fresh container with CPU/memory limits and network isolation. Configurable per-agent resource profiles." },
+  { icon: Zap, title: "Setup Wizard", desc: "Guided 7-step setup: database, auth, API keys, agent config. Device Flow auth for environments where OAuth callbacks don't work." },
   { icon: Globe, title: "Multi-Channel", desc: "Control from Web UI, Telegram, Discord, GitHub webhooks, CLI, or any MCP client. One orchestrator, many surfaces." },
-  { icon: Activity, title: "Persistent Learning", desc: "Episodic memory, semantic embeddings, strategic playbooks. Agents improve with every engagement." },
+  { icon: Activity, title: "Persistent Learning", desc: "Episodic memory, semantic embeddings, Neo4j knowledge graph, strategic playbooks. Agents improve with every engagement." },
 ];
 
 export default function FeaturesSection() {

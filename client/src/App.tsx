@@ -5,11 +5,18 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Status from "./pages/Status";
+import Docs from "./pages/Docs";
+import Auth from "./pages/Auth";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/docs"} component={Docs} />
+      <Route path={"/status"} component={Status} />
+      <Route path={"/login"} component={Auth} />
+      <Route path={"/signup"} component={Auth} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

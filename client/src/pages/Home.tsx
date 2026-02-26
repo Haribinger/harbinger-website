@@ -3,6 +3,8 @@ import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ArchitectureSection from "@/components/ArchitectureSection";
 import FeaturesSection from "@/components/FeaturesSection";
+import SecuritySection from "@/components/SecuritySection";
+import QuickstartSection from "@/components/QuickstartSection";
 import ComparisonSection from "@/components/ComparisonSection";
 import RoadmapSection from "@/components/RoadmapSection";
 import TechStackSection from "@/components/TechStackSection";
@@ -18,6 +20,8 @@ export default function Home() {
       <AboutSection />
       <ArchitectureSection />
       <FeaturesSection />
+      <SecuritySection />
+      <QuickstartSection />
       <ComparisonSection />
       <RoadmapSection />
       <TechStackSection />

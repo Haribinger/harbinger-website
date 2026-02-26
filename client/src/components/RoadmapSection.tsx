@@ -19,9 +19,16 @@ const phases: Phase[] = [
     items: ["Agent Runtime Interface (start_session, dispatch_task, stream_events)", "Workflow Graph Model (agent/tool/condition/approval/handoff nodes)", "Observability Event Schema (THOUGHT, PLAN, TOOL_CALL, FINDING, HANDOFF, COST)", "Minimal PentAGI Adapter (registers as runtime plugin)", "UI: Timeline view + graph view + expandable tool calls + cost panel"],
   },
   {
-    id: "1.0", title: "Production Blockers", weeks: "Weeks 3–4", tagline: "Fix everything that prevents production deployment.",
-    status: "upcoming",
-    items: ["Backend env vars in docker-compose", "Frontend VITE_API_URL defaults for production", "Production secret validation", "Canonical /api/v1 base path", "Single backend entrypoint for Docker + dev"],
+    id: "1.0", title: "Production Blockers", weeks: "Weeks 3–4", tagline: "Fixed. All production blockers resolved.",
+    status: "active",
+    items: [
+      "✓ Docker Compose — all ports configurable via env vars, health checks on every service",
+      "✓ Frontend — API proxy in both Vite dev server and production nginx container",
+      "✓ Backend — JWT secret validation, error message sanitization, OAuth CSRF protection",
+      "✓ Auth — 3-method login (OAuth, Device Flow, PAT), setup wizard with validation",
+      "✓ Security — TOTP verification, Docker action whitelist, request body limits, rate limiting",
+      "✓ All API calls authenticated with Bearer tokens",
+    ],
   },
   {
     id: "1.5", title: "CLI Onboarding", weeks: "Weeks 4–5", tagline: "Single entry point CLI: onboard, configure, doctor.",
@@ -29,9 +36,15 @@ const phases: Phase[] = [
     items: ["harbinger onboard (--quick, --advanced, --non-interactive)", "harbinger configure (platform, channels, agent)", "harbinger doctor (--prod mode)", "Channel selection wizard + config/channels.json"],
   },
   {
-    id: "2.0", title: "Production Hardening", weeks: "Weeks 5–7", tagline: "SSL, monitoring, cost controls, security.",
+    id: "2.0", title: "Production Hardening", weeks: "Weeks 5–7", tagline: "SSL, monitoring, cost controls — partially complete.",
     status: "upcoming",
-    items: ["HTTPS via Let's Encrypt or custom certs", "Cost governance layer (token budget, runtime, concurrency limits)", "Rate limiting on API endpoints", "Health checks for all services", "Resource usage panel in UI"],
+    items: [
+      "HTTPS via Let's Encrypt or custom certs (nginx SSL config prepared)",
+      "✓ Rate limiting on API endpoints (sliding window per-IP)",
+      "✓ Health checks for all services (postgres, redis, neo4j, backend, MCP plugins)",
+      "Cost governance layer (token budget, runtime limits)",
+      "Resource usage panel in UI",
+    ],
   },
   {
     id: "3.0", title: "Hybrid Architecture", weeks: "Weeks 7–10", tagline: "Registry-based channels, plugin SDK, clean dispatch.",

@@ -1,12 +1,12 @@
 import SectionWrapper, { SectionDesc, SectionLabel, SectionTitle } from "./SectionWrapper";
 
 const agents = [
-  { name: "Recon Agent", role: "The Scout", desc: "Subdomain enumeration, port scanning, tech fingerprinting. First in, maps the terrain.", color: "#00d4ff", tools: "subfinder, httpx, nmap, masscan" },
-  { name: "Web Agent", role: "The Hacker", desc: "SQL injection, XSS, SSRF, auth bypass. Exploits what Recon finds.", color: "#ef4444", tools: "sqlmap, nuclei, dalfox, ffuf" },
-  { name: "Binary Agent", role: "The Reverse Engineer", desc: "Binary analysis, memory corruption, firmware extraction.", color: "#a78bfa", tools: "gdb, radare2, binwalk, ghidra" },
-  { name: "Cloud Agent", role: "The Infiltrator", desc: "AWS/GCP/Azure enumeration, IAM misconfigs, S3 exposure.", color: "#f59e0b", tools: "prowler, ScoutSuite, pacu" },
-  { name: "OSINT Agent", role: "The Detective", desc: "Email harvesting, social engineering intel, leaked credentials.", color: "#4ade80", tools: "theHarvester, sherlock, h8mail" },
-  { name: "Report Agent", role: "The Writer", desc: "Compiles findings, generates pentest reports, evidence chains.", color: "#888", tools: "markdown, PDF, HTML templates" },
+  { name: "PATHFINDER", role: "Recon Scout", desc: "Subdomain enumeration, port scanning, tech fingerprinting. First in, maps the terrain.", color: "#00d4ff", tools: "subfinder, httpx, naabu, shef, ceye" },
+  { name: "BREACH", role: "Web Hacker", desc: "SQL injection, XSS, SSRF, auth bypass. Exploits what Recon finds.", color: "#ef4444", tools: "nuclei, sqlmap, dalfox, ffuf, recx" },
+  { name: "CIPHER", role: "Binary RE", desc: "Binary analysis, memory corruption, firmware extraction, reverse engineering.", color: "#a78bfa", tools: "ghidra, radare2, pwntools, binwalk" },
+  { name: "PHANTOM", role: "Cloud Infiltrator", desc: "AWS/GCP/Azure enumeration, IAM misconfigs, S3 exposure.", color: "#f59e0b", tools: "ScoutSuite, Prowler, Pacu" },
+  { name: "SPECTER", role: "OSINT Detective", desc: "Email harvesting, social engineering intel, leaked credentials.", color: "#4ade80", tools: "theHarvester, Sherlock, SpiderFoot" },
+  { name: "SCRIBE", role: "Report Writer", desc: "Compiles findings, generates pentest reports, evidence chains.", color: "#888", tools: "Markdown, PDF, platform APIs" },
 ];
 
 const components = [

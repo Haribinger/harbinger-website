@@ -1,5 +1,6 @@
 import SectionWrapper, { SectionDesc, SectionLabel, SectionTitle } from "./SectionWrapper";
-import { Check, X } from "lucide-react";
+import { Cpu, Wrench, GitBranch, Eye, Users, Lock, Minus, MessageSquare, ShoppingCart, Sparkles, HelpCircle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 const pillars = [
   { title: "Agent Runtime OS", desc: "Standardized runtime for security agents with lifecycle management, event dispatch, and policy enforcement." },
@@ -8,20 +9,25 @@ const pillars = [
   { title: "Observability-First", desc: "Every agent action is logged, graphed, costed, and replayable. Real timelines, not chat bubbles." },
 ];
 
-const isItems = [
-  "An Agent Runtime OS",
-  "A Tool Orchestration Engine",
-  "A Workflow Graph Execution Layer",
-  "Observability-first",
-  "Contributor-friendly",
-  "Local-first, configurable for cloud",
+interface ListItem {
+  icon: LucideIcon;
+  text: string;
+}
+
+const isItems: ListItem[] = [
+  { icon: Cpu, text: "Agent Runtime OS" },
+  { icon: Wrench, text: "Tool Orchestration Engine" },
+  { icon: GitBranch, text: "Workflow Graph Execution" },
+  { icon: Eye, text: "Observable by default" },
+  { icon: Users, text: "Contributor-friendly" },
+  { icon: Lock, text: "Local-first, configurable for cloud" },
 ];
 
-const isNotItems = [
-  "An AI chatbot UI",
-  "A SaaS bug bounty marketplace",
-  "A \"prompt → tool run\" wrapper",
-  "A magic black box",
+const isNotItems: ListItem[] = [
+  { icon: MessageSquare, text: "An AI chatbot UI" },
+  { icon: ShoppingCart, text: "A SaaS bug bounty marketplace" },
+  { icon: Sparkles, text: 'A "prompt → tool run" wrapper' },
+  { icon: HelpCircle, text: "A magic black box" },
 ];
 
 export default function AboutSection() {
@@ -48,26 +54,26 @@ export default function AboutSection() {
       <div className="grid md:grid-cols-2 gap-px mt-8 bg-white/[0.04] rounded-lg overflow-hidden">
         <div className="bg-[#0a0a0f] p-6">
           <h3 className="font-display font-semibold text-[15px] text-[#4ade80] mb-5 flex items-center gap-2">
-            <Check className="w-4 h-4" /> Harbinger IS
+            Harbinger IS
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {isItems.map((item) => (
-              <div key={item} className="flex items-center gap-2.5 text-[13px] text-[#999]">
-                <Check className="w-3.5 h-3.5 text-[#4ade80] shrink-0" />
-                {item}
+              <div key={item.text} className="flex items-center gap-3 text-[13px] text-[#999]">
+                <item.icon className="w-4 h-4 text-[#4ade80] shrink-0" />
+                {item.text}
               </div>
             ))}
           </div>
         </div>
         <div className="bg-[#0a0a0f] p-6">
           <h3 className="font-display font-semibold text-[15px] text-[#ef4444] mb-5 flex items-center gap-2">
-            <X className="w-4 h-4" /> Harbinger is NOT
+            Harbinger is NOT
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {isNotItems.map((item) => (
-              <div key={item} className="flex items-center gap-2.5 text-[13px] text-[#999]">
-                <X className="w-3.5 h-3.5 text-[#ef4444] shrink-0" />
-                {item}
+              <div key={item.text} className="flex items-center gap-3 text-[13px] text-[#999]">
+                <item.icon className="w-4 h-4 text-[#ef4444]/60 shrink-0" />
+                <span className="line-through decoration-[#ef4444]/30">{item.text}</span>
               </div>
             ))}
           </div>

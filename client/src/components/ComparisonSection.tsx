@@ -17,14 +17,15 @@ const rows: Row[] = [
   { feature: "Observable Event Streams", harbinger: "yes", pentagi: "partial", hexstrike: "yes", agentZero: "no", pdCloud: "yes" },
   { feature: "Workflow Graph Engine", harbinger: "yes", pentagi: "no", hexstrike: "no", agentZero: "no", pdCloud: "no" },
   { feature: "Git-as-Memory Audit Trail", harbinger: "yes", pentagi: "no", hexstrike: "no", agentZero: "no", pdCloud: "no" },
-  { feature: "Cost Governance", harbinger: "yes", pentagi: "no", hexstrike: "no", agentZero: "no", pdCloud: "yes" },
+  { feature: "Setup Wizard + Device Flow", harbinger: "yes", pentagi: "no", hexstrike: "no", agentZero: "no", pdCloud: "partial" },
+  { feature: "Production Security Hardening", harbinger: "yes", pentagi: "partial", hexstrike: "no", agentZero: "no", pdCloud: "yes" },
   { feature: "Plugin SDK", harbinger: "yes", pentagi: "no", hexstrike: "no", agentZero: "yes", pdCloud: "partial" },
   { feature: "Docker Isolation", harbinger: "yes", pentagi: "yes", hexstrike: "partial", agentZero: "yes", pdCloud: "yes" },
-  { feature: "Knowledge Graph", harbinger: "yes", pentagi: "yes", hexstrike: "no", agentZero: "no", pdCloud: "no" },
+  { feature: "Knowledge Graph (Neo4j)", harbinger: "yes", pentagi: "yes", hexstrike: "no", agentZero: "no", pdCloud: "no" },
 ];
 
 function Cell({ val, highlight }: { val: "yes" | "no" | "partial"; highlight?: boolean }) {
-  if (val === "yes") return <Check className={`w-3.5 h-3.5 ${highlight ? "text-[#00d4ff]" : "text-[#4ade80]"}`} />;
+  if (val === "yes") return <Check className={`w-3.5 h-3.5 ${highlight ? "text-[#4ade80] drop-shadow-[0_0_4px_rgba(74,222,128,0.4)]" : "text-[#4ade80]"}`} />;
   if (val === "partial") return <Minus className="w-3.5 h-3.5 text-[#f59e0b]" />;
   return <X className="w-3.5 h-3.5 text-[#333]" />;
 }

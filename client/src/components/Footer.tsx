@@ -35,15 +35,15 @@ export default function Footer() {
           <div>
             <h4 className="font-mono text-[11px] text-[#555] uppercase tracking-wider mb-4">Resources</h4>
             <div className="space-y-2">
-              <span className="block text-[12px] text-[#444]">Documentation (coming soon)</span>
-              <span className="block text-[12px] text-[#444]">API Reference (coming soon)</span>
-              <span className="block text-[12px] text-[#444]">Blog (coming soon)</span>
+              <a href="/docs" className="block text-[12px] text-[#666] hover:text-white transition-colors">Documentation</a>
+              <a href="/docs#api-reference" className="block text-[12px] text-[#666] hover:text-white transition-colors">API Reference</a>
+              <a href="/status" className="block text-[12px] text-[#666] hover:text-white transition-colors">System Status</a>
             </div>
           </div>
         </div>
         <div className="mt-12 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row justify-between items-center gap-3">
           <div className="text-[11px] text-[#444]">Built for the security community. Open source.</div>
-          <div className="text-[11px] text-[#333]">© 2025 Harbinger Project</div>
+          <div className="text-[11px] text-[#333]">© 2025–2026 Harbinger Project</div>
         </div>
       </div>
     </footer>
