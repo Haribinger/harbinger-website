@@ -227,3 +227,192 @@
 .finding-card-glow:hover {
   box-shadow: 0 0 12px var(--finding-color, rgba(255,255,255,0.05));
 }
+
+/* ═══ Cinematic Demo Animations ═══ */
+
+/* Agent avatar glow ring */
+@keyframes glow-ring {
+  0%, 100% { box-shadow: 0 0 4px var(--agent-color, #00d4ff), 0 0 12px var(--agent-color, #00d4ff)40; }
+  50% { box-shadow: 0 0 8px var(--agent-color, #00d4ff), 0 0 24px var(--agent-color, #00d4ff)60; }
+}
+.agent-glow-ring { animation: glow-ring 2s ease-in-out infinite; }
+
+/* Severity pulse for finding cards */
+@keyframes severity-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--finding-color, #ef4444)40; }
+  50% { box-shadow: 0 0 0 4px var(--finding-color, #ef4444)00; }
+}
+.severity-pulse { animation: severity-pulse 2s ease-in-out infinite; }
+
+/* Container boot-up animation */
+@keyframes container-boot {
+  0% { opacity: 0; transform: scale(0.9) translateY(4px); filter: brightness(1.5); }
+  50% { opacity: 1; transform: scale(1.02); filter: brightness(1.2); }
+  100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+}
+.container-boot { animation: container-boot 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* Scanline overlay effect */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+.demo-scanline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.06), transparent);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+}
+
+/* Grid background pattern */
+.demo-grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Data flow dash animation */
+@keyframes data-flow-dash {
+  to { stroke-dashoffset: -20; }
+}
+.data-flow-line { animation: data-flow-dash 1s linear infinite; }
+
+/* Particle float */
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  50% { transform: translateY(-20px) translateX(10px); }
+}
+.particle { animation: particle-float var(--duration, 4s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+
+/* Radar sweep for network graph */
+@keyframes radar-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.radar-sweep { animation: radar-sweep 4s linear infinite; }
+
+/* Status dot pulse */
+@keyframes status-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.8); opacity: 0; }
+}
+.status-dot-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: status-pulse 2s ease-out infinite;
+}
+
+/* Terminal typing cursor */
+@keyframes terminal-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.terminal-cursor { animation: terminal-cursor 0.8s step-end infinite; }
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(0,212,255,0.05) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Finding appear animation */
+@keyframes finding-appear {
+  0% { opacity: 0; transform: translateX(-8px) scale(0.98); }
+  60% { transform: translateX(2px) scale(1.01); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+.finding-appear { animation: finding-appear 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* Handoff glow trail */
+@keyframes handoff-glow {
+  0% { left: 0; opacity: 0; box-shadow: 0 0 6px var(--from-color, #00d4ff); }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: calc(100% - 8px); opacity: 0; box-shadow: 0 0 6px var(--to-color, #ef4444); }
+}
+.handoff-glow-packet { animation: handoff-glow 1.5s ease-in-out infinite; }
+
+/* Progress bar shimmer */
+@keyframes progress-shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+.progress-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.15) 50%,
+    transparent 100%
+  );
+  background-size: 50% 100%;
+  animation: progress-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Demo markdown table styling */
+.demo-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  font-size: 0.85em;
+}
+.demo-markdown th,
+.demo-markdown td {
+  padding: 0.3em 0.6em;
+  border: 1px solid rgba(255,255,255,0.06);
+  text-align: left;
+}
+.demo-markdown th {
+  background: rgba(255,255,255,0.03);
+  font-weight: 600;
+  color: #ccc;
+}
+.demo-markdown td {
+  color: #999;
+}
+.demo-markdown strong {
+  color: #fff;
+  font-weight: 600;
+}
+.demo-markdown h2 {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 0.8em;
+  margin-bottom: 0.3em;
+}
+.demo-markdown h3 {
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #ccc;
+  margin-top: 0.6em;
+  margin-bottom: 0.2em;
+}
+.demo-markdown ol,
+.demo-markdown ul {
+  padding-left: 1.2em;
+  margin: 0.3em 0;
+}
+.demo-markdown li {
+  color: #999;
+  margin: 0.15em 0;
+}
+.demo-markdown em {
+  color: #666;
+  font-style: italic;
+}

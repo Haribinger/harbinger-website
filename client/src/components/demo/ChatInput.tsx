@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Send, Square } from "lucide-react";
 import { useState } from "react";
 
@@ -8,7 +9,12 @@ interface ChatInputProps {
   disabled?: boolean;
 }
 
-export default function ChatInput({ onSubmit, onCancel, isPlaying, disabled }: ChatInputProps) {
+export default function ChatInput({
+  onSubmit,
+  onCancel,
+  isPlaying,
+  disabled,
+}: ChatInputProps) {
   const [value, setValue] = useState("");
 
   const handleSubmit = () => {
@@ -31,29 +37,41 @@ export default function ChatInput({ onSubmit, onCancel, isPlaying, disabled }: C
                 handleSubmit();
               }
             }}
-            placeholder={isPlaying ? "Scenario running..." : "Describe a target to scan, e.g. 'scan example.com'..."}
+            placeholder={
+              isPlaying
+                ? "Scenario running..."
+                : "Describe a target to scan, e.g. 'scan example.com'..."
+            }
             disabled={isPlaying || disabled}
             rows={1}
             className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-[13px] text-white placeholder:text-[#444] focus:outline-none focus:border-[#00d4ff]/30 focus:ring-1 focus:ring-[#00d4ff]/20 disabled:opacity-40 transition-colors"
           />
         </div>
         {isPlaying ? (
-          <button
+          <motion.button
             onClick={onCancel}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="shrink-0 p-2.5 rounded-lg bg-[#ef4444]/10 border border-[#ef4444]/20 text-[#ef4444] hover:bg-[#ef4444]/20 transition-colors"
             title="Stop scenario"
           >
             <Square className="w-4 h-4" />
-          </button>
+          </motion.button>
         ) : (
-          <button
+          <motion.button
             onClick={handleSubmit}
             disabled={!value.trim() || disabled}
+            whileHover={
+              value.trim() && !disabled ? { scale: 1.05 } : undefined
+            }
+            whileTap={
+              value.trim() && !disabled ? { scale: 0.95 } : undefined
+            }
             className="shrink-0 p-2.5 rounded-lg bg-[#00d4ff]/10 border border-[#00d4ff]/20 text-[#00d4ff] hover:bg-[#00d4ff]/20 transition-colors disabled:opacity-30 disabled:hover:bg-[#00d4ff]/10"
             title="Send"
           >
             <Send className="w-4 h-4" />
-          </button>
+          </motion.button>
         )}
       </div>
       <p className="max-w-3xl mx-auto mt-1.5 text-[10px] text-[#333]">
