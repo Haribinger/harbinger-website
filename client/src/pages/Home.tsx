@@ -1,11 +1,13 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
+import AutonomousSection from "@/components/AutonomousSection";
 import ArchitectureSection from "@/components/ArchitectureSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import SecuritySection from "@/components/SecuritySection";
 import QuickstartSection from "@/components/QuickstartSection";
 import ComparisonSection from "@/components/ComparisonSection";
+import ChangelogSection from "@/components/ChangelogSection";
 import RoadmapSection from "@/components/RoadmapSection";
 import TechStackSection from "@/components/TechStackSection";
 import CommunitySection from "@/components/CommunitySection";
@@ -18,11 +20,13 @@ export default function Home() {
       <Navbar />
       <HeroSection />
       <AboutSection />
+      <AutonomousSection />
       <ArchitectureSection />
       <FeaturesSection />
       <SecuritySection />
       <QuickstartSection />
       <ComparisonSection />
+      <ChangelogSection />
       <RoadmapSection />
       <TechStackSection />
       <CommunitySection />

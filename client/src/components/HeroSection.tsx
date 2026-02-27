@@ -80,9 +80,9 @@ export default function HeroSection() {
         <div className="grid lg:grid-cols-[1fr,1.1fr] gap-12 lg:gap-20 items-center">
           {/* Text */}
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-white/[0.06] bg-white/[0.02] mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
-              <span className="font-mono text-[11px] text-[#666]">v1.0 — Production Ready</span>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-[#00d4ff]/20 bg-[#00d4ff]/[0.04] mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
+              <span className="font-mono text-[11px] text-[#00d4ff]/80">v1.1 — Autonomous Intelligence</span>
             </div>
 
             <div className="flex items-center gap-4 mb-1">
@@ -96,12 +96,12 @@ export default function HeroSection() {
               </h1>
             </div>
             <p className="mt-2 text-[17px] sm:text-[19px] text-[#00d4ff] font-display font-medium tracking-tight">
-              Local-first autonomous offensive security OS
+              Autonomous pentesting agents you can actually see thinking.
             </p>
             <p className="mt-5 text-[15px] text-[#777] leading-[1.7] max-w-md">
-              Multi-agent workflow orchestration with 150+ security tools via MCP.
-              9 Docker services, 6 specialized agents, 14 UI pages.
-              Observable, auditable, fully local. No black boxes.
+              11 specialized agents orchestrate 150+ security tools via MCP. Self-optimizing
+              thinking loops analyze, improve, and adapt — with full observability.
+              100% local-first. No black boxes.
             </p>
 
             <div className="flex flex-wrap gap-3 mt-8">
@@ -124,12 +124,12 @@ export default function HeroSection() {
             </div>
 
             {/* Stats */}
-            <div className="flex gap-10 mt-12 pt-8 border-t border-white/[0.04]">
+            <div className="flex flex-wrap gap-8 sm:gap-10 mt-12 pt-8 border-t border-white/[0.04]">
               {[
-                { val: "150+", label: "Security Tools" },
-                { val: "6", label: "AI Agents" },
-                { val: "9", label: "Docker Services" },
-                { val: "14", label: "UI Pages" },
+                { val: "52s", label: "To Critical Finding" },
+                { val: "150+", label: "Tools via MCP" },
+                { val: "11", label: "Autonomous Agents" },
+                { val: "100%", label: "Local-First" },
               ].map((s) => (
                 <div key={s.label}>
                   <div className="font-display text-xl font-bold text-white">{s.val}</div>
@@ -140,7 +140,7 @@ export default function HeroSection() {
           </div>
 
           {/* Terminal */}
-          <div className="hidden lg:block">
+          <div className="mt-8 lg:mt-0">
             <Terminal />
           </div>
         </div>

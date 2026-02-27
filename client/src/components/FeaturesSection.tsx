@@ -1,5 +1,5 @@
 import SectionWrapper, { SectionDesc, SectionLabel, SectionTitle } from "./SectionWrapper";
-import { Activity, Box, Eye, GitBranch, Globe, Lock, Network, Shield, Terminal, Users, Workflow, Zap } from "lucide-react";
+import { Activity, Box, Brain, Eye, GitBranch, Globe, Lock, Network, Shield, Terminal, Users, Workflow, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface Feature {
@@ -9,18 +9,18 @@ interface Feature {
 }
 
 const features: Feature[] = [
-  { icon: Users, title: "Multi-Agent Swarm", desc: "6 specialized agents — PATHFINDER (recon), BREACH (web), CIPHER (binary), PHANTOM (cloud), SPECTER (OSINT), SCRIBE (reports) — collaborate through formal handoff protocols." },
-  { icon: Workflow, title: "Workflow Graph Engine", desc: "Visual directed graph editor with parallel branches, conditions, approvals, handoffs, and retry logic. Built on @xyflow/react." },
+  { icon: Users, title: "11-Agent Swarm", desc: "PATHFINDER, BREACH, PHANTOM, SPECTER, CIPHER, SCRIBE, SAM, BRIEF, SAGE, LENS, MAINTAINER — each with personality, tools, and autonomous thinking loops." },
+  { icon: Brain, title: "Autonomous Intelligence", desc: "Every agent runs a 60-second thinking loop. Scans 5 dimensions, calculates efficiency ratios, proposes automations. Approve, reject, or implement from the dashboard." },
+  { icon: Workflow, title: "Workflow Graph Engine", desc: "Visual directed graph editor with 6 node types, parallel branches, conditions, approvals, handoffs. Built on @xyflow/react." },
   { icon: Terminal, title: "150+ Security Tools", desc: "Nuclei, SQLMap, Subfinder, httpx, Prowler, Nikto, dirsearch, and 140+ more — all via 4 MCP plugin servers." },
   { icon: Network, title: "MCP-First Architecture", desc: "HexStrike, PentAGI, RedTeam, and MCP-UI servers. Compatible with Claude Desktop, Cursor, and any MCP client." },
-  { icon: Eye, title: "Observable by Design", desc: "14 dashboard pages, real-time WebSocket event streams, agent timeline views, graph views, cost tracking. No black boxes." },
+  { icon: Eye, title: "Observable by Design", desc: "19 dashboard pages, real-time event streams, agent timeline views, graph views, cost tracking, autonomous thought log. No black boxes." },
   { icon: Lock, title: "100% Local-First", desc: "9 Docker services, pgvector, Redis, Neo4j. Runs entirely local with Ollama or LM Studio. Your data stays yours." },
-  { icon: GitBranch, title: "Git Memory", desc: "Every significant event committed to a Git repo. Full auditability, replay, and GitHub Actions compute." },
   { icon: Shield, title: "Production Security", desc: "OAuth CSRF protection, TOTP verification, JWT auth, error sanitization, Docker action whitelist, rate limiting, request body limits." },
   { icon: Box, title: "Docker Isolation", desc: "Each agent runs in a fresh container with CPU/memory limits and network isolation. Configurable per-agent resource profiles." },
-  { icon: Zap, title: "Setup Wizard", desc: "Guided 7-step setup: database, auth, API keys, agent config. Device Flow auth for environments where OAuth callbacks don't work." },
+  { icon: Zap, title: "Smart Model Router", desc: "5 complexity tiers, local-first with cloud fallback, per-agent overrides. CIPHER uses Opus, PATHFINDER uses Sonnet, MAINTAINER stays local." },
   { icon: Globe, title: "Multi-Channel", desc: "Control from Web UI, Telegram, Discord, GitHub webhooks, CLI, or any MCP client. One orchestrator, many surfaces." },
-  { icon: Activity, title: "Persistent Learning", desc: "Episodic memory, semantic embeddings, Neo4j knowledge graph, strategic playbooks. Agents improve with every engagement." },
+  { icon: Activity, title: "Meta-Cognition", desc: "Agents monitor their own performance, identify improvements, calculate cost-benefit ratios, and coordinate through swarm awareness." },
 ];
 
 export default function FeaturesSection() {

@@ -13,9 +13,10 @@ Harbinger is an **autonomous offensive security framework** — a local-first, M
 
 ## What You Get
 
-- **6 AI agents** — PATHFINDER (recon), BREACH (web), CIPHER (binary), PHANTOM (cloud), SPECTER (OSINT), SCRIBE (reports)
+- **11 AI agents** — PATHFINDER (recon), BREACH (web), PHANTOM (cloud), SPECTER (OSINT), CIPHER (binary), SCRIBE (reports), SAM (coding), BRIEF (reporter), SAGE (learning), LENS (browser), MAINTAINER (code health)
 - **150+ security tools** via 4 MCP plugin servers
-- **14 UI pages** — Dashboard, Command Center, Agents, Workflows, MCP Manager, Docker, Browser, Red Team, Skills Hub, Bounty Hub, OpenClaw, Settings, Login, Setup
+- **19 UI pages** — Dashboard, Command Center, Chat, Agents, Workflows, Workflow Editor, MCP Manager, Docker, Browser, Red Team, Bounty Hub, Skills Hub, OpenClaw, Code Health, Scope Manager, Vuln Deep Dive, Remediation, Autonomous Intelligence, Settings
+- **Autonomous Intelligence** — background thinking loops, swarm awareness, efficiency tracking, meta-cognition
 - **9 Docker services** — PostgreSQL, Redis, Neo4j, Go backend, React frontend, HexStrike, PentAGI, RedTeam, Nginx
 
 ## Quick Start
@@ -196,18 +197,32 @@ In Docker production, the same proxying is done by the frontend container's ngin
 
 const agents = `# Agents
 
-Harbinger ships with 6 specialized AI agents. Each agent has its own Docker container profile, tool set, and personality.
+Harbinger ships with 11 specialized AI agents. Each agent has its own Docker container profile, tool set, personality, and autonomous thinking loop.
 
 ## Agent Roster
 
-| Codename | Role | Memory | CPU | Primary Tools |
-|----------|------|--------|-----|---------------|
-| **PATHFINDER** | Recon Scout | 2048 MB | 2 | subfinder, httpx, naabu, shef, ceye |
-| **BREACH** | Web Hacker | 4096 MB | 4 | nuclei, sqlmap, dalfox, ffuf, recx |
-| **PHANTOM** | Cloud Infiltrator | 2048 MB | 2 | ScoutSuite, Prowler, Pacu |
-| **SPECTER** | OSINT Detective | 2048 MB | 2 | theHarvester, Sherlock, SpiderFoot |
-| **CIPHER** | Binary RE | 4096 MB | 4 | Ghidra, radare2, pwntools |
-| **SCRIBE** | Report Writer | 1024 MB | 1 | Markdown, PDF, platform APIs |
+| Codename | Role | Primary Tools |
+|----------|------|---------------|
+| **PATHFINDER** | Recon Scout | subfinder, httpx, naabu, shef, ceye |
+| **BREACH** | Web Hacker | nuclei, sqlmap, dalfox, ffuf, recx |
+| **PHANTOM** | Cloud Infiltrator | ScoutSuite, Prowler, Pacu |
+| **SPECTER** | OSINT Detective | theHarvester, Sherlock, SpiderFoot |
+| **CIPHER** | Binary RE | Ghidra, radare2, pwntools |
+| **SCRIBE** | Report Writer | Markdown, PDF, platform APIs |
+| **SAM** | Coding Specialist | eslint, gofmt, TypeScript, Go, Python |
+| **BRIEF** | Morning Reporter | RSS, web scraping, content generation |
+| **SAGE** | Learning Agent | workflow optimization, self-improvement |
+| **LENS** | Browser Agent | CDP navigate, screenshot, execute JS |
+| **MAINTAINER** | Code Health | health scans, dependency audit, safe fixes |
+
+## Autonomous Intelligence
+
+Every agent runs a background thinking loop (autonomous-engine.js) that:
+- Analyzes context every 60 seconds
+- Scans 5 dimensions: performance, accuracy, cost, automation, collaboration
+- Calculates efficiency: \\\`COST_BENEFIT = (TIME_SAVED * FREQUENCY) / (IMPL_COST + RUNNING_COST)\\\`
+- Only surfaces proposals where cost_benefit > 1.0
+- Reports thoughts to the swarm API for operator approval
 
 ## Agent Configuration
 
@@ -573,7 +588,7 @@ Harbinger is built by security engineers for security engineers. Every layer is 
 
 const uiPages = `# UI Pages
 
-Harbinger's frontend has 14 pages built with React 19, TypeScript, and the Obsidian Command design system.
+Harbinger's frontend has 19 pages built with React 19, TypeScript, and the Obsidian Command design system.
 
 ## Page Overview
 
@@ -588,11 +603,16 @@ Harbinger's frontend has 14 pages built with React 19, TypeScript, and the Obsid
 | **MCP Manager** | \`/mcp\` | MCP server connections and tool browser |
 | **Docker Manager** | \`/docker\` | Container management and logs |
 | **Browser Manager** | \`/browsers\` | Headless browser sessions |
-| **Settings** | \`/settings\` | Theme, model, API key configuration |
 | **Red Team** | \`/redteam\` | Red team operations dashboard |
 | **Skills Hub** | \`/skills\` | Security skill library |
 | **Bounty Hub** | \`/bounty-hub\` | Bug bounty program management |
-| **OpenClaw** | \`/openclaw\` | Community contributions |
+| **OpenClaw** | \`/openclaw\` | Event bus, voice, command routing |
+| **Code Health** | \`/code-health\` | MAINTAINER metrics dashboard |
+| **Scope Manager** | \`/scope-manager\` | In-scope/out-of-scope asset management |
+| **Vuln Deep Dive** | \`/vuln-deep-dive\` | Vulnerability analysis and triage |
+| **Remediation** | \`/remediation\` | Kanban vulnerability fix tracker |
+| **Autonomous** | \`/autonomous\` | Agent thinking loops, swarm intelligence |
+| **Settings** | \`/settings\` | Theme, model, API key configuration |
 
 ## Design System — "Obsidian Command"
 
@@ -609,17 +629,27 @@ Harbinger's frontend has 14 pages built with React 19, TypeScript, and the Obsid
 
 ## State Management
 
-13 Zustand stores manage application state:
+19 Zustand stores manage application state:
 
 - \`authStore\` — GitHub OAuth, JWT, login/logout
 - \`agentStore\` — Agents, personalities, chats
 - \`mcpStore\` — MCP servers, builtin tools
 - \`dockerStore\` — Containers, images
+- \`browserStore\` — CDP browser sessions
 - \`workflowStore\` — Workflow graphs
+- \`workflowEditorStore\` — Canvas state (nodes, edges)
 - \`settingsStore\` — Theme, model defaults
 - \`secretsStore\` — API keys, provider models
 - \`skillsStore\` — Skills with fallback
-- And 5 more (browser, bounty, channel, setup, theme)
+- \`bugBountyStore\` — Targets, findings, reports
+- \`bountyHubStore\` — Platform integrations
+- \`setupStore\` — Setup wizard state
+- \`channelStore\` — Discord/Telegram/Slack
+- \`commandCenterStore\` — Live agent feeds
+- \`codeHealthStore\` — Code quality metrics
+- \`themeStore\` — Dark theme tokens, scheduling
+- \`modelRouterStore\` — Provider selection, fallback
+- \`autonomousStore\` — Agent thoughts, swarm state, efficiency
 `;
 
 // ─── WORKFLOWS ───────────────────────────────────────────────────────────────
