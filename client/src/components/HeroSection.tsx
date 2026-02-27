@@ -113,6 +113,13 @@ export default function HeroSection() {
                 Get Started
               </a>
               <a
+                href="/demo"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium text-[#4ade80] border border-[#4ade80]/20 rounded hover:bg-[#4ade80]/[0.06] hover:border-[#4ade80]/30 transition-colors"
+              >
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                Try Interactive Demo
+              </a>
+              <a
                 href="https://github.com/Haribinger/Harbinger"
                 target="_blank"
                 rel="noopener noreferrer"

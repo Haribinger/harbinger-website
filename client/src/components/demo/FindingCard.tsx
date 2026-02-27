@@ -1,39 +1,105 @@
 import type { Finding, Severity } from "@/lib/demo/types";
+import { useState } from "react";
 
-const severityConfig: Record<Severity, { color: string; bg: string; border: string; label: string }> = {
-  critical: { color: "#ef4444", bg: "#ef444410", border: "#ef444425", label: "CRITICAL" },
-  high: { color: "#f97316", bg: "#f9731610", border: "#f9731625", label: "HIGH" },
-  medium: { color: "#f59e0b", bg: "#f59e0b10", border: "#f59e0b25", label: "MEDIUM" },
-  low: { color: "#3b82f6", bg: "#3b82f610", border: "#3b82f625", label: "LOW" },
-  info: { color: "#6b7280", bg: "#6b728010", border: "#6b728025", label: "INFO" },
+const severityConfig: Record<Severity, { color: string; bg: string; border: string; label: string; cvssRange: [number, number] }> = {
+  critical: { color: "#ef4444", bg: "#ef444410", border: "#ef444425", label: "CRITICAL", cvssRange: [9.0, 10.0] },
+  high: { color: "#f97316", bg: "#f9731610", border: "#f9731625", label: "HIGH", cvssRange: [7.0, 8.9] },
+  medium: { color: "#f59e0b", bg: "#f59e0b10", border: "#f59e0b25", label: "MEDIUM", cvssRange: [4.0, 6.9] },
+  low: { color: "#3b82f6", bg: "#3b82f610", border: "#3b82f625", label: "LOW", cvssRange: [0.1, 3.9] },
+  info: { color: "#6b7280", bg: "#6b728010", border: "#6b728025", label: "INFO", cvssRange: [0, 0] },
 };
+
+function getCvss(finding: Finding): number {
+  if (finding.cvss) return finding.cvss;
+  const range = severityConfig[finding.severity].cvssRange;
+  return Number((range[0] + Math.random() * (range[1] - range[0])).toFixed(1));
+}
 
 export default function FindingCard({ finding }: { finding: Finding }) {
   const s = severityConfig[finding.severity];
+  const cvss = getCvss(finding);
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <div
-      className="rounded-lg overflow-hidden animate-in ml-11"
-      style={{ backgroundColor: s.bg, border: `1px solid ${s.border}` }}
+      className="rounded-lg overflow-hidden animate-in ml-11 finding-card-glow"
+      style={{ backgroundColor: s.bg, border: `1px solid ${s.border}`, ["--finding-color" as string]: s.color }}
     >
-      <div className="flex items-center gap-2 px-3 py-1.5" style={{ borderBottom: `1px solid ${s.border}` }}>
+      {/* Header */}
+      <div
+        className="flex items-center gap-2 px-3 py-1.5 cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+        style={{ borderBottom: `1px solid ${s.border}` }}
+      >
         <span
-          className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-wider"
+          className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-wider shrink-0"
           style={{ backgroundColor: s.color + "22", color: s.color }}
         >
           {s.label}
         </span>
-        <span className="text-[12px] font-medium text-white truncate">{finding.title}</span>
+        <span className="text-[12px] font-medium text-white truncate flex-1">{finding.title}</span>
+        <div className="flex items-center gap-2 shrink-0">
+          {/* CVSS badge */}
+          <span
+            className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold"
+            style={{ backgroundColor: s.color + "15", color: s.color }}
+          >
+            CVSS {cvss}
+          </span>
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            className={`text-[#555] transition-transform ${expanded ? "rotate-180" : ""}`}
+          >
+            <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
+        </div>
       </div>
+
+      {/* Body */}
       <div className="px-3 py-2 space-y-1.5">
         <div className="text-[11px] font-mono text-[#888]">
           <span className="text-[#555]">Target:</span> {finding.target}
         </div>
         <p className="text-[11px] text-[#999] leading-[1.6]">{finding.description}</p>
+
+        {/* Evidence - always visible if present */}
         {finding.evidence && (
           <div className="mt-1 px-2 py-1.5 rounded bg-black/30 border border-white/[0.04]">
             <span className="text-[10px] font-mono text-[#f59e0b]">Evidence: </span>
             <span className="text-[10px] font-mono text-[#777]">{finding.evidence}</span>
+          </div>
+        )}
+
+        {/* Expanded details */}
+        {expanded && (
+          <div className="mt-2 space-y-2 pt-2 border-t border-white/[0.04] animate-in">
+            {/* CVSS breakdown */}
+            <div className="flex flex-wrap gap-2">
+              {["Attack Vector: Network", "Complexity: Low", "Privileges: None", "User Interaction: None"].map((item) => (
+                <span key={item} className="px-1.5 py-0.5 rounded text-[8px] font-mono bg-white/[0.04] text-[#777]">
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); }}
+                className="px-2.5 py-1 rounded text-[10px] font-mono font-medium transition-colors"
+                style={{ backgroundColor: s.color + "15", color: s.color, border: `1px solid ${s.color}25` }}
+              >
+                View Exploit PoC
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); }}
+                className="px-2.5 py-1 rounded text-[10px] font-mono font-medium bg-white/[0.04] text-[#888] border border-white/[0.06] hover:text-white transition-colors"
+              >
+                Remediation Steps
+              </button>
+            </div>
           </div>
         )}
       </div>

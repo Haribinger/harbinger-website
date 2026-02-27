@@ -182,3 +182,48 @@
   50% { opacity: 0; }
 }
 .cursor-blink { animation: blink 1s step-end infinite; }
+
+/* Slide-in animations */
+@keyframes slide-in-from-bottom {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-in { animation: slide-in-from-bottom 0.3s ease-out; }
+
+/* Thinking dots */
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+.thinking-dot { animation: thinking-pulse 1.2s ease-in-out infinite; }
+
+/* Demo markdown styling */
+.demo-markdown code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+  color: #00d4ff;
+}
+
+/* Docker container spin */
+@keyframes docker-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.docker-spin { animation: docker-spin 1.5s linear infinite; }
+
+/* Handoff packet animation */
+@keyframes handoff-slide {
+  0% { left: 0; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: calc(100% - 8px); opacity: 0; }
+}
+.handoff-packet { animation: handoff-slide 1.5s ease-in-out infinite; }
+
+/* Finding card glow on hover */
+.finding-card-glow:hover {
+  box-shadow: 0 0 12px var(--finding-color, rgba(255,255,255,0.05));
+}
