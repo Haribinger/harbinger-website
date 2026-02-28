@@ -4,6 +4,7 @@ import AboutSection from "@/components/AboutSection";
 import AutonomousSection from "@/components/AutonomousSection";
 import ArchitectureSection from "@/components/ArchitectureSection";
 import FeaturesSection from "@/components/FeaturesSection";
+import RedTeamC2Section from "@/components/RedTeamC2Section";
 import SecuritySection from "@/components/SecuritySection";
 import QuickstartSection from "@/components/QuickstartSection";
 import ComparisonSection from "@/components/ComparisonSection";
@@ -23,6 +24,7 @@ export default function Home() {
       <AutonomousSection />
       <ArchitectureSection />
       <FeaturesSection />
+      <RedTeamC2Section />
       <SecuritySection />
       <QuickstartSection />
       <ComparisonSection />

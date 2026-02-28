@@ -12,6 +12,19 @@ interface ChangelogEntry {
 const entries: ChangelogEntry[] = [
   {
     date: "Feb 2026",
+    version: "v1.2.0",
+    tag: "feature",
+    title: "Red Team C2 & LOL Integration",
+    description: "Full C2 infrastructure management and Living Off the Land integration. 28 LOL projects from lolol.farm, 5 C2 frameworks, attack chain builder, MITRE ATT&CK mapping, and AI-driven adversary emulation.",
+    highlights: [
+      "28 LOL projects — LOLBAS, GTFOBins, LOLDrivers, LOLC2, HijackLibs, WADComs, LOLRMM, and more",
+      "C2 framework management — Mythic, Sliver, Havoc, Cobalt Strike, Custom",
+      "Attack chain builder — compose LOL entries into executable sequences",
+      "MITRE ATT&CK heatmap — technique coverage visualization",
+    ],
+  },
+  {
+    date: "Feb 2026",
     version: "v1.1.0",
     tag: "agent",
     title: "Autonomous Intelligence",

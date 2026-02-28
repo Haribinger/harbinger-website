@@ -55,7 +55,23 @@ const phases: Phase[] = [
     ],
   },
   {
-    id: "1.5", title: "CLI Onboarding", weeks: "Weeks 5–6", tagline: "Skills shipped. CLI commands next.",
+    id: "1.2", title: "Red Team C2 & LOL", weeks: "Weeks 5–6", tagline: "Current. Full C2 infrastructure and 28 LOL project integration.",
+    status: "active",
+    items: [
+      "✓ C2 framework management — Mythic, Sliver, Havoc, Cobalt Strike, Custom",
+      "✓ Listener management — HTTP/S, TCP, SMB, DNS, WebSocket, Named Pipe",
+      "✓ Payload generation — EXE, DLL, Shellcode, PS1, HTA, MSI, Office Macro",
+      "✓ Implant tracking — real-time status, integrity levels, sleep/jitter",
+      "✓ 28 LOL projects integrated from lolol.farm (3,000+ entries)",
+      "✓ Attack chain builder — compose LOL entries with C2 commands",
+      "✓ MITRE ATT&CK heatmap — technique coverage visualization",
+      "Real-time agent coordination and live command streaming",
+      "Agent learning — success/failure tracking, technique scoring",
+      "Safety controls — target validation, scope enforcement, kill switch",
+    ],
+  },
+  {
+    id: "1.5", title: "CLI Onboarding", weeks: "Weeks 6–7", tagline: "Skills shipped. CLI commands next.",
     status: "active",
     items: [
       "✓ harbinger-healthcheck skill — full codebase health scanning",

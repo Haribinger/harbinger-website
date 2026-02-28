@@ -21,6 +21,7 @@ const features: Feature[] = [
   { icon: Zap, title: "Smart Model Router", desc: "5 complexity tiers, local-first with cloud fallback, per-agent overrides. CIPHER uses Opus, PATHFINDER uses Sonnet, MAINTAINER stays local." },
   { icon: Globe, title: "Multi-Channel", desc: "Control from Web UI, Telegram, Discord, GitHub webhooks, CLI, or any MCP client. One orchestrator, many surfaces." },
   { icon: Activity, title: "Meta-Cognition", desc: "Agents monitor their own performance, identify improvements, calculate cost-benefit ratios, and coordinate through swarm awareness." },
+  { icon: GitBranch, title: "Red Team C2", desc: "Mythic, Sliver, Havoc, Cobalt Strike, or custom C2. Listener management, payload generation, implant tracking, and attack chain orchestration." },
 ];
 
 export default function FeaturesSection() {
