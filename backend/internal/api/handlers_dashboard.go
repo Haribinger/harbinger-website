@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"time"
 
@@ -10,6 +11,8 @@ import (
 
 // ── Dashboard ──
 
+// DashboardStats returns aggregated statistics for the authenticated user's
+// dashboard, including scan counts, open findings, and current credit balance.
 func (h *Handlers) DashboardStats(w http.ResponseWriter, r *http.Request) {
 	userID := GetUserID(r.Context())
 	balance := h.credits.GetBalance(userID)
@@ -35,11 +38,13 @@ type notification struct {
 	Time    string `json:"time"`
 }
 
+// ListNotifications returns all notifications for the authenticated user.
 func (h *Handlers) ListNotifications(w http.ResponseWriter, r *http.Request) {
 	// TODO: fetch from database
 	jsonResponse(w, []notification{})
 }
 
+// MarkNotificationRead marks a specific notification as read.
 func (h *Handlers) MarkNotificationRead(w http.ResponseWriter, r *http.Request) {
 	// TODO: mark notification read in database
 	jsonResponse(w, map[string]string{"status": "ok"})
@@ -47,6 +52,7 @@ func (h *Handlers) MarkNotificationRead(w http.ResponseWriter, r *http.Request) 
 
 // ── Profile ──
 
+// GetProfile returns the profile information for the authenticated user.
 func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
 	userID := GetUserID(r.Context())
 	jsonResponse(w, map[string]interface{}{
@@ -56,12 +62,13 @@ func (h *Handlers) GetProfile(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// UpdateProfile updates the authenticated user's profile information.
 func (h *Handlers) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Name  string `json:"name"`
 		Email string `json:"email"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(io.LimitReader(r.Body, maxBodyBytes)).Decode(&req); err != nil {
 		jsonError(w, "invalid request", http.StatusBadRequest)
 		return
 	}
@@ -79,17 +86,19 @@ type apiKeyResponse struct {
 	Created time.Time `json:"created"`
 }
 
+// ListAPIKeys returns all API keys belonging to the authenticated user.
 func (h *Handlers) ListAPIKeys(w http.ResponseWriter, r *http.Request) {
 	// TODO: fetch from database
 	jsonResponse(w, []apiKeyResponse{})
 }
 
+// CreateAPIKey generates a new API key for the authenticated user.
 func (h *Handlers) CreateAPIKey(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Name   string   `json:"name"`
 		Scopes []string `json:"scopes"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(io.LimitReader(r.Body, maxBodyBytes)).Decode(&req); err != nil {
 		jsonError(w, "invalid request", http.StatusBadRequest)
 		return
 	}
@@ -109,6 +118,7 @@ func (h *Handlers) CreateAPIKey(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// RevokeAPIKey deletes the specified API key, immediately invalidating it.
 func (h *Handlers) RevokeAPIKey(w http.ResponseWriter, r *http.Request) {
 	// TODO: delete from database
 	jsonResponse(w, map[string]string{"status": "revoked"})
@@ -123,16 +133,18 @@ type webhookConfig struct {
 	Active bool     `json:"active"`
 }
 
+// ListWebhooks returns all configured webhook endpoints for the authenticated user.
 func (h *Handlers) ListWebhooks(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, []webhookConfig{})
 }
 
+// CreateWebhook registers a new webhook endpoint for scan event notifications.
 func (h *Handlers) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		URL    string   `json:"url"`
 		Events []string `json:"events"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(io.LimitReader(r.Body, maxBodyBytes)).Decode(&req); err != nil {
 		jsonError(w, "invalid request", http.StatusBadRequest)
 		return
 	}
@@ -152,12 +164,14 @@ func (h *Handlers) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DeleteWebhook removes a webhook endpoint configuration.
 func (h *Handlers) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, map[string]string{"status": "deleted"})
 }
 
 // ── Findings & Reports ──
 
+// ListFindings returns all findings associated with a specific scan.
 func (h *Handlers) ListFindings(w http.ResponseWriter, r *http.Request) {
 	scanID := r.PathValue("id")
 	active, ok := h.scanner.GetActiveScan(scanID)
@@ -168,10 +182,11 @@ func (h *Handlers) ListFindings(w http.ResponseWriter, r *http.Request) {
 
 	jsonResponse(w, map[string]interface{}{
 		"scan_id":  scanID,
-		"findings": active.Scan.Findings,
+		"findings": active.Findings,
 	})
 }
 
+// ExportReport generates and returns a downloadable report for the specified scan.
 func (h *Handlers) ExportReport(w http.ResponseWriter, r *http.Request) {
 	scanID := r.PathValue("id")
 	active, ok := h.scanner.GetActiveScan(scanID)

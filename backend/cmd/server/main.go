@@ -59,7 +59,7 @@ func main() {
 	)
 
 	// WebSocket hub
-	wsHub := api.NewWSHub()
+	wsHub := api.NewWSHub(cfg.AllowedOrigins)
 
 	// Agent executor
 	executor := agent.NewExecutor(orch)

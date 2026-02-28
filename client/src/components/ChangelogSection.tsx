@@ -12,6 +12,19 @@ interface ChangelogEntry {
 const entries: ChangelogEntry[] = [
   {
     date: "Feb 2026",
+    version: "v1.6.0",
+    tag: "feature",
+    title: "Realtime Collaboration, Agent Learning & Safety Controls",
+    description: "Three new backend subsystems with full frontend integration: SSE realtime streaming with multi-operator sessions, technique scoring and AI recommendation engine, and safety guardrails with target validation, scope enforcement, and approval workflows.",
+    highlights: [
+      "SSE event streaming with 1,000-event ring buffer and per-channel fan-out",
+      "Agent learning engine — technique scoring, campaign tracking, LOL discovery pipeline, AI recommendations",
+      "Safety controls — 8 built-in target validation rules, scope enforcement, rate limiting, 10K audit trail",
+      "120 new API routes across realtime, learning, and safety subsystems",
+    ],
+  },
+  {
+    date: "Feb 2026",
     version: "v1.5.0",
     tag: "feature",
     title: "Platform UI, Agent Fleet & Mission Control",

@@ -70,7 +70,25 @@ const phases: Phase[] = [
     ],
   },
   {
-    id: "1.5", title: "Platform UI & Agent Fleet", weeks: "Weeks 6–7", tagline: "Shipped. 12 pages, 45 agents, mission control dashboard.",
+    id: "1.3", title: "Realtime, Learning & Safety", weeks: "Weeks 6–7", tagline: "Shipped. SSE streaming, technique scoring, safety guardrails.",
+    status: "completed",
+    items: [
+      "✓ SSE event streaming — 1,000-event ring buffer, per-channel fan-out, sub-100ms latency",
+      "✓ Multi-operator sessions — admin, operator, observer roles with live tracking",
+      "✓ Global kill switch — instant halt of all operations via SSE broadcast",
+      "✓ Technique scoring — success/failure/detection rates, platform filtering, rolling averages",
+      "✓ Campaign tracking — timeline events, auto-progress, per-step success/failure/detection",
+      "✓ LOL discovery pipeline — auto-discover techniques, pending → approved/rejected review",
+      "✓ AI recommendation engine — 4 heuristics: success picks, evasion alerts, chain templates, gap analysis",
+      "✓ Target validation — 8 built-in rules blocking RFC1918, loopback, cloud metadata, link-local",
+      "✓ Scope enforcement — include/exclude with exclude-always-wins model",
+      "✓ Audit trail — 10,000-entry ring buffer with severity, filtering, export",
+      "✓ Approval workflows — pending → approved/rejected, 24h auto-expiry",
+      "✓ 120 new API routes (realtime + learning + safety × dual prefix)",
+    ],
+  },
+  {
+    id: "1.5", title: "Platform UI & Agent Fleet", weeks: "Weeks 7–8", tagline: "Shipped. 12 pages, 45 agents, mission control dashboard.",
     status: "completed",
     items: [
       "✓ 12-page React SPA — Home, Demo, Scan, Docs, Status, Pricing, Auth, Dashboard, Settings, Scan Results, Mission Control, 404",
@@ -127,11 +145,14 @@ const phases: Phase[] = [
     ],
   },
   {
-    id: "4.0", title: "Persistent Learning", weeks: "Weeks 14–18", tagline: "Agents that learn and improve over time.",
+    id: "4.0", title: "Persistent Learning", weeks: "Weeks 14–18", tagline: "Deep memory and cross-session intelligence.",
     status: "future",
     items: [
       "✓ Session context — agent state preserved during lifecycle",
       "✓ SAGE learning agent — nightly optimization, pattern learning",
+      "✓ Technique scoring engine — success/detection rates, platform-aware",
+      "✓ AI recommendation engine — 4 heuristics for technique selection",
+      "✓ Campaign tracking with per-step analysis",
       "Episodic memory (job summaries across sessions)",
       "Semantic memory (pgvector embedding index)",
       "Strategic memory (playbooks from successful engagements)",

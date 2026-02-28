@@ -37,7 +37,7 @@ export class HarbingerWS {
     this.ws = new WebSocket(this.url);
 
     this.ws.onopen = () => {
-      console.log("[harbinger-ws] connected");
+      console.debug("[harbinger-ws] connected");
       this.reconnectAttempts = 0;
 
       // Re-subscribe to active scans
@@ -68,7 +68,7 @@ export class HarbingerWS {
     };
 
     this.ws.onclose = (event) => {
-      console.log("[harbinger-ws] disconnected:", event.code, event.reason);
+      console.debug("[harbinger-ws] disconnected:", event.code, event.reason);
       this.emit("_disconnected", {
         type: "_disconnected",
         scan_id: "",
@@ -138,14 +138,14 @@ export class HarbingerWS {
 
   private scheduleReconnect(): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log("[harbinger-ws] max reconnect attempts reached");
+      console.debug("[harbinger-ws] max reconnect attempts reached");
       return;
     }
 
     const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
     this.reconnectAttempts++;
 
-    console.log(`[harbinger-ws] reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
+    console.debug(`[harbinger-ws] reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
     this.reconnectTimer = setTimeout(() => this.connect(), delay);
   }
 

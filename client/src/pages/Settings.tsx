@@ -72,26 +72,32 @@ function ProfileTab() {
         <h3 className="text-[15px] font-medium text-white mb-4">Profile Information</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-[12px] text-[#888] mb-1.5">Display Name</label>
+            <label htmlFor="profile-name" className="block text-[12px] text-[#888] mb-1.5">Display Name</label>
             <input
+              id="profile-name"
               type="text"
               defaultValue="Operator"
+              autoComplete="name"
               className="w-full bg-[#111118] border border-white/[0.06] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#444] focus:border-[#00d4ff]/30 focus:outline-none transition-colors"
             />
           </div>
           <div>
-            <label className="block text-[12px] text-[#888] mb-1.5">Email</label>
+            <label htmlFor="profile-email" className="block text-[12px] text-[#888] mb-1.5">Email</label>
             <input
+              id="profile-email"
               type="email"
               defaultValue="admin@harbinger.ai"
+              autoComplete="email"
               className="w-full bg-[#111118] border border-white/[0.06] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#444] focus:border-[#00d4ff]/30 focus:outline-none transition-colors"
             />
           </div>
           <div>
-            <label className="block text-[12px] text-[#888] mb-1.5">Organization</label>
+            <label htmlFor="profile-org" className="block text-[12px] text-[#888] mb-1.5">Organization</label>
             <input
+              id="profile-org"
               type="text"
               defaultValue="Harbinger Security"
+              autoComplete="organization"
               className="w-full bg-[#111118] border border-white/[0.06] rounded-lg px-3 py-2 text-[13px] text-white placeholder-[#444] focus:border-[#00d4ff]/30 focus:outline-none transition-colors"
             />
           </div>
@@ -150,8 +156,9 @@ function APIKeysTab() {
       {showNew && (
         <div className="p-4 bg-[#111118] border border-[#00d4ff]/20 rounded-lg space-y-3">
           <div>
-            <label className="block text-[12px] text-[#888] mb-1.5">Key Name</label>
+            <label htmlFor="new-key-name" className="block text-[12px] text-[#888] mb-1.5">Key Name</label>
             <input
+              id="new-key-name"
               type="text"
               placeholder="e.g. Production, CI/CD"
               className="w-full bg-[#0a0a0f] border border-white/[0.06] rounded px-3 py-2 text-[13px] text-white placeholder-[#444] focus:border-[#00d4ff]/30 focus:outline-none transition-colors"
@@ -191,11 +198,11 @@ function APIKeysTab() {
                 <button
                   onClick={() => copyKey(key.prefix)}
                   className="p-1 text-[#555] hover:text-white transition-colors"
-                  title="Copy key"
+                  aria-label={copied === key.prefix ? "Copied!" : `Copy API key ${key.name}`}
                 >
                   {copied === key.prefix ? <Check className="w-3.5 h-3.5 text-[#22c55e]" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
-                <button className="p-1 text-[#555] hover:text-[#ef4444] transition-colors" title="Revoke key">
+                <button className="p-1 text-[#555] hover:text-[#ef4444] transition-colors" aria-label={`Revoke API key ${key.name}`}>
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>

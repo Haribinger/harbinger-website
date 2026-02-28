@@ -176,8 +176,17 @@ export default function Scan() {
   }, [logs]);
 
   const handleStartScan = async () => {
-    if (!target.trim()) {
+    const trimmedTarget = target.trim();
+    if (!trimmedTarget) {
       setError("Enter a target domain");
+      return;
+    }
+
+    // Basic client-side domain/IP format validation
+    const domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+    const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+    if (!domainPattern.test(trimmedTarget) && !ipPattern.test(trimmedTarget)) {
+      setError("Enter a valid domain name (e.g. example.com) or IP address");
       return;
     }
 
@@ -286,14 +295,18 @@ export default function Scan() {
 
             {/* Target input */}
             <div className="mb-6">
-              <label className="text-[10px] font-mono text-[#555] uppercase tracking-wider mb-2 block">
+              <label htmlFor="scan-target" className="text-[10px] font-mono text-[#555] uppercase tracking-wider mb-2 block">
                 Target Domain
               </label>
               <input
+                id="scan-target"
                 type="text"
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
                 placeholder="example.com"
+                aria-label="Target domain to scan"
+                autoComplete="off"
+                spellCheck={false}
                 className="w-full bg-[#0d0d15] border border-white/[0.08] rounded-lg px-4 py-3 text-sm font-mono text-white placeholder-[#333] focus:outline-none focus:border-[#00d4ff]/40 transition-colors"
                 onKeyDown={(e) => e.key === "Enter" && handleStartScan()}
               />
@@ -301,16 +314,18 @@ export default function Scan() {
 
             {/* Scan type selection */}
             <div className="mb-6">
-              <label className="text-[10px] font-mono text-[#555] uppercase tracking-wider mb-3 block">
+              <span id="scan-type-label" className="text-[10px] font-mono text-[#555] uppercase tracking-wider mb-3 block">
                 Scan Type
-              </label>
-              <div className="grid gap-2">
+              </span>
+              <div role="radiogroup" aria-labelledby="scan-type-label" className="grid gap-2">
                 {SCAN_TYPES.map((type) => {
                   const Icon = type.icon;
                   const isSelected = scanType === type.id;
                   return (
                     <button
                       key={type.id}
+                      role="radio"
+                      aria-checked={isSelected}
                       onClick={() => setScanType(type.id)}
                       className={`flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                         isSelected
@@ -413,14 +428,16 @@ export default function Scan() {
                   {status === "running" ? (
                     <button
                       onClick={handleCancelScan}
+                      aria-label="Cancel the current scan"
                       className="flex items-center gap-1.5 px-3 py-1 rounded text-[11px] font-mono bg-[#ef4444]/10 text-[#ef4444] hover:bg-[#ef4444]/20 transition-colors"
                     >
-                      <Square className="w-3 h-3" />
+                      <Square className="w-3 h-3" aria-hidden="true" />
                       Cancel Scan
                     </button>
                   ) : (
                     <button
                       onClick={handleReset}
+                      aria-label="Start a new scan"
                       className="flex items-center gap-1.5 px-3 py-1 rounded text-[11px] font-mono bg-[#00d4ff]/10 text-[#00d4ff] hover:bg-[#00d4ff]/20 transition-colors"
                     >
                       New Scan

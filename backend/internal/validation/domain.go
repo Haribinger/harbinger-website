@@ -28,6 +28,8 @@ var blockedDomains = []string{
 	"ip6-loopback",
 }
 
+// ValidateDomain checks that the given string is a well-formed domain name or
+// public IP address and rejects localhost, private, and link-local ranges.
 func ValidateDomain(domain string) error {
 	domain = strings.TrimSpace(strings.ToLower(domain))
 
@@ -92,6 +94,8 @@ func validateIP(ip net.IP) error {
 	return nil
 }
 
+// ValidateScanType returns an error if scanType is not one of the recognised
+// scan type identifiers accepted by the Harbinger API.
 func ValidateScanType(scanType string) error {
 	valid := map[string]bool{
 		"recon":       true,

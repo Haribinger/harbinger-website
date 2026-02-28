@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -11,33 +12,54 @@ import (
 	"github.com/harbinger-ai/harbinger/internal/models"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 4096,
-	CheckOrigin: func(r *http.Request) bool {
-		return true // configured via CORS
-	},
-}
-
-type WSClient struct {
-	conn     *websocket.Conn
-	userID   string
-	scanIDs  map[string]bool // subscribed scan IDs
-	send     chan []byte
-	mu       sync.Mutex
-}
-
-type WSHub struct {
-	mu      sync.RWMutex
-	clients map[*WSClient]bool
-}
-
-func NewWSHub() *WSHub {
-	return &WSHub{
-		clients: make(map[*WSClient]bool),
+// newUpgrader returns a WebSocket upgrader that validates origins against the
+// provided allowed-origins list (e.g. from config.AllowedOrigins). Non-browser
+// clients that send no Origin header are always allowed through.
+func newUpgrader(origins []string) websocket.Upgrader {
+	return websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 4096,
+		CheckOrigin: func(r *http.Request) bool {
+			origin := r.Header.Get("Origin")
+			if origin == "" {
+				// Non-browser clients (CLI tools, tests) carry no Origin header.
+				return true
+			}
+			for _, allowed := range origins {
+				if strings.EqualFold(origin, allowed) {
+					return true
+				}
+			}
+			log.Printf("ws: rejected connection from origin %q", origin)
+			return false
+		},
 	}
 }
 
+type WSClient struct {
+	conn    *websocket.Conn
+	userID  string
+	scanIDs map[string]bool // subscribed scan IDs
+	send    chan []byte
+	mu      sync.Mutex
+}
+
+type WSHub struct {
+	mu       sync.RWMutex
+	clients  map[*WSClient]bool
+	upgrader websocket.Upgrader
+}
+
+// NewWSHub creates a WebSocket hub that validates connection origins against
+// the provided allowedOrigins list.
+func NewWSHub(allowedOrigins []string) *WSHub {
+	return &WSHub{
+		clients:  make(map[*WSClient]bool),
+		upgrader: newUpgrader(allowedOrigins),
+	}
+}
+
+// Register adds a new WebSocket client to the hub.
 func (h *WSHub) Register(client *WSClient) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -45,6 +67,7 @@ func (h *WSHub) Register(client *WSClient) {
 	log.Printf("ws: client connected (user=%s, total=%d)", client.userID, len(h.clients))
 }
 
+// Unregister removes a WebSocket client from the hub and closes its send channel.
 func (h *WSHub) Unregister(client *WSClient) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -102,8 +125,9 @@ func (h *WSHub) BroadcastToUser(userID string, event models.ScanEvent) {
 	}
 }
 
+// HandleWS upgrades an HTTP connection to WebSocket and registers the client.
 func (h *WSHub) HandleWS(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("ws: upgrade error: %v", err)
 		return

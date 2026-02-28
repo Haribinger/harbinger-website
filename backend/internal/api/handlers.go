@@ -14,6 +14,10 @@ import (
 	"github.com/harbinger-ai/harbinger/internal/validation"
 )
 
+// maxBodyBytes is the maximum number of bytes accepted in a request body to
+// prevent memory exhaustion from oversized payloads.
+const maxBodyBytes = 1 << 16 // 64 KiB
+
 type Handlers struct {
 	jwtAuth   *auth.JWTAuth
 	scanner   *scanpkg.Scanner
@@ -48,9 +52,10 @@ type authResponse struct {
 	User  *models.User `json:"user"`
 }
 
+// Login authenticates a user with email and password and returns a JWT token.
 func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(io.LimitReader(r.Body, maxBodyBytes)).Decode(&req); err != nil {
 		jsonError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -76,9 +81,10 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// Signup creates a new user account and returns a JWT token.
 func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 	var req signupRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(io.LimitReader(r.Body, maxBodyBytes)).Decode(&req); err != nil {
 		jsonError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -125,11 +131,12 @@ type scanRequest struct {
 	ScanType string `json:"scan_type"`
 }
 
+// CreateScan initiates a new security scan for the authenticated user.
 func (h *Handlers) CreateScan(w http.ResponseWriter, r *http.Request) {
 	userID := GetUserID(r.Context())
 
 	var req scanRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(io.LimitReader(r.Body, maxBodyBytes)).Decode(&req); err != nil {
 		jsonError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -172,6 +179,7 @@ func (h *Handlers) CreateScan(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, scan)
 }
 
+// CancelScan stops a running scan identified by path parameter {id}.
 func (h *Handlers) CancelScan(w http.ResponseWriter, r *http.Request) {
 	scanID := r.PathValue("id")
 	if scanID == "" {
@@ -187,6 +195,7 @@ func (h *Handlers) CancelScan(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, map[string]string{"status": "cancelled"})
 }
 
+// GetScan returns the current state of an active scan.
 func (h *Handlers) GetScan(w http.ResponseWriter, r *http.Request) {
 	scanID := r.PathValue("id")
 	active, ok := h.scanner.GetActiveScan(scanID)
@@ -198,6 +207,7 @@ func (h *Handlers) GetScan(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, active.Scan)
 }
 
+// ListScans returns all currently active scans for the server.
 func (h *Handlers) ListScans(w http.ResponseWriter, r *http.Request) {
 	scans := h.scanner.ListActiveScans()
 	jsonResponse(w, scans)
@@ -205,6 +215,8 @@ func (h *Handlers) ListScans(w http.ResponseWriter, r *http.Request) {
 
 // ── Credits ──
 
+// GetCredits returns the authenticated user's current credit balance and
+// available credit packs for purchase.
 func (h *Handlers) GetCredits(w http.ResponseWriter, r *http.Request) {
 	userID := GetUserID(r.Context())
 	balance := h.credits.GetBalance(userID)
@@ -214,13 +226,14 @@ func (h *Handlers) GetCredits(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// PurchaseCredits creates a Stripe checkout session for purchasing credit packs.
 func (h *Handlers) PurchaseCredits(w http.ResponseWriter, r *http.Request) {
 	userID := GetUserID(r.Context())
 
 	var req struct {
 		PackID string `json:"pack_id"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(io.LimitReader(r.Body, maxBodyBytes)).Decode(&req); err != nil {
 		jsonError(w, "invalid request", http.StatusBadRequest)
 		return
 	}
@@ -236,12 +249,14 @@ func (h *Handlers) PurchaseCredits(w http.ResponseWriter, r *http.Request) {
 
 // ── Agents ──
 
+// ListAgents returns the registry of all available AI security agents.
 func (h *Handlers) ListAgents(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, agent.AgentRegistry)
 }
 
 // ── Health ──
 
+// Health returns a JSON health-check payload indicating API and service status.
 func (h *Handlers) Health(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, map[string]interface{}{
 		"status":    "healthy",

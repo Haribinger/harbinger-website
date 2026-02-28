@@ -1,5 +1,5 @@
 import SectionWrapper, { SectionDesc, SectionLabel, SectionTitle } from "./SectionWrapper";
-import { Shield, Lock, Eye, Key, Server, AlertTriangle } from "lucide-react";
+import { Shield, Lock, Eye, Key, Server, AlertTriangle, Target, FileCheck, OctagonX } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface SecurityFeature {
@@ -67,6 +67,36 @@ const features: SecurityFeature[] = [
       "SQL field name whitelisting (no injection)",
       "Docker action parameter sanitization",
       "Setup guard — prevents re-setup after config",
+    ],
+  },
+  {
+    icon: Target,
+    title: "Target Validation",
+    items: [
+      "8 built-in rules: RFC1918, loopback, link-local, metadata",
+      "Cloud metadata blocking (169.254.169.254)",
+      "Custom allow/block rule management",
+      "Pre-execution validation for all operations",
+    ],
+  },
+  {
+    icon: FileCheck,
+    title: "Approval Workflows",
+    items: [
+      "High-risk operations require explicit approval",
+      "Pending → approved/rejected with reviewer tracking",
+      "24-hour auto-expiry on unreviewed requests",
+      "10,000-entry audit trail with severity levels",
+    ],
+  },
+  {
+    icon: OctagonX,
+    title: "Kill Switch & Scope",
+    items: [
+      "Global kill switch halts all operations instantly",
+      "Scope enforcement with exclude-always-wins model",
+      "Per-operation rate limiting (minute/hour/concurrent)",
+      "Sliding window counters with auto-cleanup",
     ],
   },
 ];

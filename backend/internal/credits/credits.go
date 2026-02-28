@@ -11,6 +11,8 @@ type Manager struct {
 	defaultCredits int
 }
 
+// NewManager creates a credit Manager where every new user is seeded with
+// defaultCredits on their first interaction.
 func NewManager(defaultCredits int) *Manager {
 	return &Manager{
 		balances:       make(map[string]int),
@@ -18,6 +20,8 @@ func NewManager(defaultCredits int) *Manager {
 	}
 }
 
+// GetBalance returns the current credit balance for userID, using the default
+// credit amount if the user has not yet been initialised.
 func (m *Manager) GetBalance(userID string) int {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -29,6 +33,8 @@ func (m *Manager) GetBalance(userID string) int {
 	return balance
 }
 
+// InitUser seeds a user's credit balance with the default amount if it has not
+// already been initialised. Subsequent calls for the same user are no-ops.
 func (m *Manager) InitUser(userID string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -38,6 +44,8 @@ func (m *Manager) InitUser(userID string) {
 	}
 }
 
+// Spend deducts amount credits from userID's balance, returning an error if
+// the balance is insufficient.
 func (m *Manager) Spend(userID string, amount int) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -56,6 +64,7 @@ func (m *Manager) Spend(userID string, amount int) error {
 	return nil
 }
 
+// AddCredits increases userID's credit balance by amount.
 func (m *Manager) AddCredits(userID string, amount int) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -67,6 +76,7 @@ func (m *Manager) AddCredits(userID string, amount int) {
 	m.balances[userID] = balance + amount
 }
 
+// CanAfford reports whether userID has at least amount credits available.
 func (m *Manager) CanAfford(userID string, amount int) bool {
 	return m.GetBalance(userID) >= amount
 }

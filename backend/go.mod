@@ -1,6 +1,8 @@
 module github.com/harbinger-ai/harbinger
 
-go 1.22
+go 1.22.7
+
+toolchain go1.24.9
 
 require (
 	github.com/docker/docker v27.4.1+incompatible
@@ -9,7 +11,6 @@ require (
 	github.com/go-chi/httprate v0.14.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gorilla/websocket v1.5.3
-	github.com/lib/pq v1.10.9
 	github.com/stripe/stripe-go/v81 v81.3.0
 	golang.org/x/crypto v0.31.0
 )
@@ -31,13 +32,14 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	go.opentelemetry.io/auto/sdk v0.2.0-alpha // indirect
+	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0 // indirect
 	go.opentelemetry.io/otel v1.33.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.33.0 // indirect
 	go.opentelemetry.io/otel/metric v1.33.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.33.0 // indirect
 	go.opentelemetry.io/otel/trace v1.33.0 // indirect
+	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
 	gotest.tools/v3 v3.5.2 // indirect

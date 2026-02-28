@@ -1,5 +1,5 @@
 import SectionWrapper, { SectionDesc, SectionLabel, SectionTitle } from "./SectionWrapper";
-import { Activity, Box, Brain, Eye, GitBranch, Globe, Lock, Network, Shield, Terminal, Users, Workflow, Zap } from "lucide-react";
+import { Activity, Box, Brain, Eye, GitBranch, Globe, Lock, Network, Radio, Shield, Target, Terminal, Users, Workflow, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface Feature {
@@ -22,6 +22,9 @@ const features: Feature[] = [
   { icon: Globe, title: "Multi-Channel", desc: "Control from Web UI, Telegram, Discord, GitHub webhooks, CLI, or any MCP client. One orchestrator, many surfaces." },
   { icon: Activity, title: "Meta-Cognition", desc: "Agents monitor their own performance, identify improvements, calculate cost-benefit ratios, and coordinate through swarm awareness." },
   { icon: GitBranch, title: "Red Team C2", desc: "Mythic, Sliver, Havoc, Cobalt Strike, or custom C2. Listener management, payload generation, implant tracking, and attack chain orchestration." },
+  { icon: Radio, title: "Realtime Streaming", desc: "SSE event bus with 1,000-event ring buffer. Multi-operator sessions, agent heartbeats, command output streaming, and global kill switch — sub-100ms latency." },
+  { icon: Brain, title: "Agent Learning Engine", desc: "Technique scoring, campaign tracking, LOL discovery pipeline, per-agent performance metrics, and AI recommendations with 4 heuristic engines." },
+  { icon: Target, title: "Safety Controls", desc: "Target validation with 8 built-in rules, scope enforcement with exclude-always-wins, per-operation rate limiting, audit trails, and approval workflows." },
 ];
 
 export default function FeaturesSection() {

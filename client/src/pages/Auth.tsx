@@ -5,7 +5,7 @@ import { Github, Key, Smartphone, ArrowRight, Loader2, Copy, Check, ExternalLink
 type Tab = "oauth" | "device" | "token";
 
 // Harbinger API base — configurable via env var, defaults to local dev
-const API_BASE = (import.meta as any).env?.VITE_HARBINGER_API || "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_HARBINGER_API || "http://localhost:3000";
 
 export default function Auth() {
   const [tab, setTab] = useState<Tab>("oauth");
@@ -159,10 +159,12 @@ export default function Auth() {
           </div>
 
           {/* Tab selector */}
-          <div className="flex gap-1 p-1 rounded-lg bg-white/[0.03] border border-white/[0.06] mb-6">
+          <div role="tablist" aria-label="Authentication method" className="flex gap-1 p-1 rounded-lg bg-white/[0.03] border border-white/[0.06] mb-6">
             {tabs.map((t) => (
               <button
                 key={t.id}
+                role="tab"
+                aria-selected={tab === t.id}
                 onClick={() => { setTab(t.id); setError(null); }}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[12px] font-medium transition-colors ${
                   tab === t.id
@@ -170,7 +172,7 @@ export default function Auth() {
                     : "text-[#666] hover:text-[#999]"
                 }`}
               >
-                <t.icon className="w-3.5 h-3.5" />
+                <t.icon className="w-3.5 h-3.5" aria-hidden="true" />
                 {t.label}
               </button>
             ))}
@@ -228,6 +230,7 @@ export default function Auth() {
                         <button
                           onClick={() => { navigator.clipboard.writeText(device.userCode); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                           className="p-1.5 rounded bg-white/[0.04] hover:bg-white/[0.08] transition-colors"
+                          aria-label={copied ? "Copied!" : "Copy code to clipboard"}
                         >
                           {copied ? <Check className="w-3.5 h-3.5 text-[#4ade80]" /> : <Copy className="w-3.5 h-3.5 text-[#555]" />}
                         </button>
@@ -262,10 +265,12 @@ export default function Auth() {
                   </a>
                 </p>
                 <input
+                  id="token-input"
                   type="password"
                   value={tokenInput}
                   onChange={(e) => setTokenInput(e.target.value)}
                   placeholder="ghp_..."
+                  aria-label="GitHub Personal Access Token"
                   className="w-full px-3 py-2.5 rounded-lg bg-[#0c0c12] border border-white/[0.08] text-[13px] font-mono text-white placeholder-[#444] focus:outline-none focus:border-[#00d4ff]/30 transition-colors"
                   onKeyDown={(e) => e.key === "Enter" && handleToken()}
                 />

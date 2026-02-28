@@ -48,7 +48,7 @@ const capabilities = [
 ];
 
 export default function RedTeamC2Section() {
-  const [activeTab, setActiveTab] = useState<"c2" | "lol" | "chains">("lol");
+  const [activeTab, setActiveTab] = useState<"c2" | "lol" | "chains" | "realtime" | "learning" | "safety">("lol");
   const totalEntries = lolProjects.reduce((sum, p) => sum + p.entries, 0);
 
   return (
@@ -61,11 +61,14 @@ export default function RedTeamC2Section() {
       </SectionDesc>
 
       {/* Sub-tabs */}
-      <div className="flex gap-1 mt-10 mb-8 justify-center">
+      <div className="flex gap-1 mt-10 mb-8 justify-center flex-wrap">
         {[
           { id: "lol" as const, label: "LOL Integration" },
           { id: "c2" as const, label: "C2 Infrastructure" },
           { id: "chains" as const, label: "Attack Chains" },
+          { id: "realtime" as const, label: "Realtime Ops" },
+          { id: "learning" as const, label: "Agent Learning" },
+          { id: "safety" as const, label: "Safety Controls" },
         ].map((t) => (
           <button
             key={t.id}
@@ -229,6 +232,191 @@ export default function RedTeamC2Section() {
               <div><span className="text-[#333]">00:17.0</span> <span className="text-[#00d4ff]">STEP_5</span> <span className="text-[#a78bfa]">schtasks /create /sc onlogon /tn WindowsUpdate /tr C:\temp\svc.exe /ru SYSTEM</span></div>
               <div><span className="text-[#333]">00:18.2</span> <span className="text-[#4ade80]">RESULT</span> <span className="text-[#4ade80]">Persistence established — scheduled task created</span></div>
               <div><span className="text-[#333]">00:19.0</span> <span className="text-[#f0c040]">CHAIN</span> <span className="text-[#4ade80]">Chain complete — 5/5 steps — MITRE: T1105, T1218.005, T1558.003, T1003.001, T1053.005</span></div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Realtime Ops */}
+      {activeTab === "realtime" && (
+        <div>
+          <p className="text-[12px] text-[#666] mb-6 max-w-xl">
+            Multi-operator collaboration with SSE streaming, live agent dashboards, command output streaming,
+            and a global kill switch. Everyone sees the same battlefield.
+          </p>
+
+          {/* Realtime stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/[0.04] rounded-lg overflow-hidden mb-8">
+            {[
+              { label: "Streaming", value: "SSE", color: "#00d4ff" },
+              { label: "Operators", value: "Multi", color: "#f0c040" },
+              { label: "Kill Switch", value: "Global", color: "#ef4444" },
+              { label: "Latency", value: "<100ms", color: "#4ade80" },
+            ].map((s) => (
+              <div key={s.label} className="bg-[#0a0a0f] p-4 text-center">
+                <div className="text-[22px] font-bold font-mono" style={{ color: s.color }}>{s.value}</div>
+                <div className="text-[10px] text-[#555] mt-1 font-mono uppercase tracking-wider">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Realtime features grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.04] rounded-lg overflow-hidden mb-6">
+            {[
+              { title: "SSE Event Streaming", desc: "Server-Sent Events with 1,000-event ring buffer and per-channel fan-out. No WebSocket overhead — pure HTTP streaming." },
+              { title: "Agent Live Status", desc: "Real-time heartbeat monitoring for every active agent. See idle, executing, waiting, or error states with current task context." },
+              { title: "Command Output Streaming", desc: "Watch implant command output appear line-by-line. Queue, execute, complete — every stage streamed to all subscribed operators." },
+              { title: "Operator Sessions", desc: "Multi-user with admin, operator, and observer roles. Track who's active, their current view, and last action timestamp." },
+              { title: "Global Kill Switch", desc: "One button to halt all operations across every agent, implant, and chain. Instant propagation via SSE broadcast." },
+              { title: "Event Broadcasting", desc: "Agent status, command output, implant callbacks, chain progress, operator actions, system alerts — all unified into one event bus." },
+            ].map((f) => (
+              <div key={f.title} className="bg-[#0a0a0f] p-5 hover:bg-white/[0.015] transition-colors">
+                <div className="font-display font-semibold text-[13px] text-white mb-1.5">{f.title}</div>
+                <p className="text-[11px] text-[#555] leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Terminal preview */}
+          <div className="rounded-lg border border-white/[0.06] bg-[#0c0c12] overflow-hidden">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 bg-white/[0.02] border-b border-white/[0.04]">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+              <span className="ml-2 text-[11px] font-mono text-[#444]">harbinger realtime — live event stream</span>
+            </div>
+            <div className="p-3 font-mono text-[11px] leading-[1.7]">
+              <div><span className="text-[#333]">14:23:01</span> <span className="text-[#00d4ff]">AGENT</span> <span className="text-[#888]">PATHFINDER status → executing [recon scan on 10.0.0.0/24]</span></div>
+              <div><span className="text-[#333]">14:23:03</span> <span className="text-[#4ade80]">STREAM</span> <span className="text-[#4ade80]">CMD-1847 output: Discovered 23 live hosts, 147 open ports</span></div>
+              <div><span className="text-[#333]">14:23:05</span> <span className="text-[#a78bfa]">OPERATOR</span> <span className="text-[#888]">admin@red-team joined session [role: admin]</span></div>
+              <div><span className="text-[#333]">14:23:07</span> <span className="text-[#f0c040]">CALLBACK</span> <span className="text-[#f0c040]">Implant GHOST-7 checked in — beacon interval 30s</span></div>
+              <div><span className="text-[#333]">14:23:09</span> <span className="text-[#00d4ff]">CHAIN</span> <span className="text-[#888]">Attack chain "Kerberoast-Persist" progress: 3/5 steps complete</span></div>
+              <div><span className="text-[#333]">14:23:11</span> <span className="text-[#ef4444]">ALERT</span> <span className="text-[#ef4444]">Detection alert — EDR signature match on step 4. Recommending evasion pivot.</span></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Agent Learning */}
+      {activeTab === "learning" && (
+        <div>
+          <p className="text-[12px] text-[#666] mb-6 max-w-xl">
+            Every technique, campaign, and agent task is scored and tracked. The learning engine identifies
+            what works, what gets detected, and recommends better approaches over time.
+          </p>
+
+          {/* Learning stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/[0.04] rounded-lg overflow-hidden mb-8">
+            {[
+              { label: "Scoring", value: "5-Axis", color: "#00d4ff" },
+              { label: "LOL Sources", value: "28", color: "#f0c040" },
+              { label: "Rec Engine", value: "AI", color: "#a78bfa" },
+              { label: "Discovery", value: "Auto", color: "#4ade80" },
+            ].map((s) => (
+              <div key={s.label} className="bg-[#0a0a0f] p-4 text-center">
+                <div className="text-[22px] font-bold font-mono" style={{ color: s.color }}>{s.value}</div>
+                <div className="text-[10px] text-[#555] mt-1 font-mono uppercase tracking-wider">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Learning features */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.04] rounded-lg overflow-hidden mb-6">
+            {[
+              { title: "Technique Scoring", desc: "Every technique tracked: success rate, detection rate, avg execution time. Filter by platform, sort by performance. Reset and re-calibrate anytime." },
+              { title: "Campaign Tracking", desc: "Record campaigns from planning to completion. Auto-calculated progress, timeline events, technique mapping, and per-step success/failure/detection counts." },
+              { title: "LOL Discovery Pipeline", desc: "Automatically discover new LOL techniques across 28 projects. Pending review → approved/rejected workflow with reviewer attribution." },
+              { title: "Agent Performance", desc: "Per-agent metrics: total tasks, success rate, avg duration, most-used technique, best-performing technique. Compare agents head-to-head." },
+              { title: "AI Recommendations", desc: "4 heuristic engines: high-success+low-detection picks, evasion alerts for detected techniques, co-campaign chain templates, cross-platform gap analysis." },
+              { title: "Learning Dashboard", desc: "Top-performing techniques, worst detection rates, recent discoveries, agent comparisons — all in one view with drill-down into every metric." },
+            ].map((f) => (
+              <div key={f.title} className="bg-[#0a0a0f] p-5 hover:bg-white/[0.015] transition-colors">
+                <div className="font-display font-semibold text-[13px] text-white mb-1.5">{f.title}</div>
+                <p className="text-[11px] text-[#555] leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Recommendation example */}
+          <div className="rounded-lg border border-white/[0.06] bg-[#0c0c14] p-5">
+            <div className="font-mono text-[10px] text-[#f0c040] uppercase tracking-wider mb-3">Example Recommendations</div>
+            <div className="space-y-3">
+              {[
+                { type: "technique", color: "#4ade80", title: "High-success certutil.exe for payload delivery", desc: "87% success, 12% detection — recommend for initial access chains on Windows targets" },
+                { type: "evasion", color: "#ef4444", title: "mimikatz detection rate critical", desc: "92% detection rate over 15 campaigns — recommend switching to pypykatz or nanodump" },
+                { type: "chain", color: "#a78bfa", title: "Kerberoast + DCSync chain template", desc: "3 campaigns used this combination successfully — pre-built chain available" },
+                { type: "timing", color: "#00d4ff", title: "Off-hours execution window", desc: "Techniques executed 22:00-06:00 show 34% lower detection — schedule high-risk ops accordingly" },
+              ].map((r) => (
+                <div key={r.title} className="flex items-start gap-3">
+                  <span className="font-mono text-[9px] px-2 py-0.5 rounded-full border shrink-0 mt-0.5" style={{ color: r.color, borderColor: `${r.color}30`, backgroundColor: `${r.color}08` }}>
+                    {r.type}
+                  </span>
+                  <div>
+                    <div className="font-mono text-[12px] text-white">{r.title}</div>
+                    <div className="text-[11px] text-[#555]">{r.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Safety Controls */}
+      {activeTab === "safety" && (
+        <div>
+          <p className="text-[12px] text-[#666] mb-6 max-w-xl">
+            Guardrails that prevent accidental harm. Target validation blocks private IPs and cloud metadata.
+            Scope enforcement uses exclude-always-wins. Audit everything. Approve before you fire.
+          </p>
+
+          {/* Safety stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/[0.04] rounded-lg overflow-hidden mb-8">
+            {[
+              { label: "Built-in Rules", value: "8", color: "#ef4444" },
+              { label: "Audit Buffer", value: "10K", color: "#f0c040" },
+              { label: "Approval TTL", value: "24h", color: "#a78bfa" },
+              { label: "Kill Switch", value: "Global", color: "#00d4ff" },
+            ].map((s) => (
+              <div key={s.label} className="bg-[#0a0a0f] p-4 text-center">
+                <div className="text-[22px] font-bold font-mono" style={{ color: s.color }}>{s.value}</div>
+                <div className="text-[10px] text-[#555] mt-1 font-mono uppercase tracking-wider">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Safety features */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.04] rounded-lg overflow-hidden mb-6">
+            {[
+              { title: "Target Validation", desc: "8 built-in rules block RFC1918, loopback, link-local, cloud metadata (169.254.169.254), and carrier-grade NAT. Custom allow/block rules on top." },
+              { title: "Scope Enforcement", desc: "Include/exclude rules with exclude-always-wins model. Check any target+port combo against scope before execution. Active/inactive toggle per rule." },
+              { title: "Rate Limiting", desc: "Per-operation sliding window limits: max per minute, max per hour, max concurrent. Automatic counter cleanup. Protection against runaway automation." },
+              { title: "Audit Trail", desc: "10,000-entry ring buffer with severity levels (info/warning/critical). Filter by user, action, time range. Full export for compliance reporting." },
+              { title: "Approval Workflows", desc: "High-risk operations require explicit approval. Pending → approved/rejected with reviewer, 24-hour auto-expiry. No unreviewed destructive actions." },
+              { title: "Safety Dashboard", desc: "Kill switch status, pending approvals count, rate limit health, scope rule summary, recent validation failures, recent audit entries — one glance." },
+            ].map((f) => (
+              <div key={f.title} className="bg-[#0a0a0f] p-5 hover:bg-white/[0.015] transition-colors">
+                <div className="font-display font-semibold text-[13px] text-white mb-1.5">{f.title}</div>
+                <p className="text-[11px] text-[#555] leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Blocked targets example */}
+          <div className="rounded-lg border border-white/[0.06] bg-[#0c0c12] overflow-hidden">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 bg-white/[0.02] border-b border-white/[0.04]">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+              <span className="ml-2 text-[11px] font-mono text-[#444]">harbinger safety — target validation</span>
+            </div>
+            <div className="p-3 font-mono text-[11px] leading-[1.7]">
+              <div><span className="text-[#4ade80]">ALLOW</span> <span className="text-[#888]">target=10.10.14.5 — matches scope rule "HTB Lab Range"</span></div>
+              <div><span className="text-[#ef4444]">BLOCK</span> <span className="text-[#ef4444]">target=192.168.1.1 — RFC1918 private address (built-in rule)</span></div>
+              <div><span className="text-[#ef4444]">BLOCK</span> <span className="text-[#ef4444]">target=169.254.169.254 — Cloud metadata endpoint (built-in rule)</span></div>
+              <div><span className="text-[#f0c040]">APPROVAL</span> <span className="text-[#888]">target=203.0.113.50 — requires approval (external target, not in scope)</span></div>
+              <div><span className="text-[#4ade80]">ALLOW</span> <span className="text-[#888]">target=scanme.nmap.org — matches scope rule "Authorized Targets"</span></div>
+              <div><span className="text-[#ef4444]">BLOCK</span> <span className="text-[#ef4444]">target=127.0.0.1 — Loopback address (built-in rule)</span></div>
+              <div><span className="text-[#a78bfa]">AUDIT</span> <span className="text-[#555]">6 validations logged — 3 allowed, 3 blocked, 0 approved</span></div>
             </div>
           </div>
         </div>
