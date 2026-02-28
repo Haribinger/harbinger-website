@@ -65,16 +65,30 @@ const thoughts: ThoughtEntry[] = [
 
 function ThoughtLog() {
   const [visibleCount, setVisibleCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
     if (visibleCount >= thoughts.length) {
       const t = setTimeout(() => setVisibleCount(0), 4000);
       return () => clearTimeout(t);
     }
     const t = setTimeout(() => setVisibleCount((v) => v + 1), 2200);
     return () => clearTimeout(t);
-  }, [visibleCount]);
+  }, [visibleCount, isVisible]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -88,7 +102,7 @@ function ThoughtLog() {
   };
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-[#0c0c12] overflow-hidden">
+    <div ref={containerRef} className="rounded-xl border border-white/[0.06] bg-[#0c0c12] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.04]">
         <div className="flex items-center gap-2">

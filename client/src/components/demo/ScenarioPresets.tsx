@@ -1,9 +1,8 @@
-import { scenarios } from "@/lib/demo/scenarios";
-import type { Scenario } from "@/lib/demo/types";
+import { scanPresets, type ScanPreset } from "@/lib/demo/scan-presets";
 import { motion } from "framer-motion";
 
 interface ScenarioPresetsProps {
-  onSelect: (scenario: Scenario) => void;
+  onSelect: (preset: ScanPreset) => void;
   disabled?: boolean;
   canAfford: (cost: number) => boolean;
   compact?: boolean;
@@ -18,7 +17,7 @@ export default function ScenarioPresets({
   if (compact) {
     return (
       <div className="space-y-1.5">
-        {scenarios.map((s, i) => {
+        {scanPresets.map((s, i) => {
           const affordable = canAfford(s.cost);
           return (
             <motion.button
@@ -50,7 +49,7 @@ export default function ScenarioPresets({
 
   return (
     <div className="grid sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
-      {scenarios.map((s, i) => {
+      {scanPresets.map((s, i) => {
         const affordable = canAfford(s.cost);
         return (
           <motion.button

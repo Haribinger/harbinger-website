@@ -151,7 +151,7 @@ function CostSummary({ msg }: { msg: ChatMsg }) {
     >
       <div className="flex flex-wrap items-center gap-3 sm:gap-4 px-5 py-3 rounded-xl border border-[#00d4ff]/15 bg-[#00d4ff]/[0.03]">
         <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#00d4ff] font-medium">
-          ✓ Scenario Complete
+          ✓ Scan Complete
         </div>
         <div className="w-px h-3 bg-white/[0.08]" />
         <div className="flex items-center gap-1.5">

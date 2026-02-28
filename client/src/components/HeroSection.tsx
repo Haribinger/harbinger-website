@@ -27,23 +27,37 @@ const lines: TermLine[] = [
 
 function Terminal() {
   const [visible, setVisible] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
     if (visible >= lines.length) {
       const t = setTimeout(() => setVisible(0), 3000);
       return () => clearTimeout(t);
     }
     const t = setTimeout(() => setVisible((v) => v + 1), 1400);
     return () => clearTimeout(t);
-  }, [visible]);
+  }, [visible, isVisible]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [visible]);
 
   return (
-    <div className="rounded-lg border border-white/[0.06] bg-[#0c0c12] overflow-hidden">
+    <div ref={containerRef} className="rounded-lg border border-white/[0.06] bg-[#0c0c12] overflow-hidden">
       <div className="flex items-center gap-1.5 px-3.5 py-2 bg-white/[0.02] border-b border-white/[0.04]">
         <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
         <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />

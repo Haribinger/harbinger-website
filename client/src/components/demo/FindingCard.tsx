@@ -1,6 +1,6 @@
 import type { Finding, Severity } from "@/lib/demo/types";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 
 const severityConfig: Record<
   Severity,
@@ -57,9 +57,10 @@ function getCvss(finding: Finding): number {
   );
 }
 
-export default function FindingCard({ finding }: { finding: Finding }) {
+const FindingCard = memo(function FindingCard({ finding }: { finding: Finding }) {
   const s = severityConfig[finding.severity];
-  const cvss = getCvss(finding);
+  // Stabilize the CVSS score across re-renders using useMemo so Math.random() is not called on every render
+  const cvss = useMemo(() => getCvss(finding), [finding.cvss, finding.severity, finding.title]);
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -204,4 +205,6 @@ export default function FindingCard({ finding }: { finding: Finding }) {
       </div>
     </motion.div>
   );
-}
+});
+
+export default FindingCard;

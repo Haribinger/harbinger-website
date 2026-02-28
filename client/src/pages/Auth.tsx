@@ -95,6 +95,10 @@ export default function Auth() {
 
   const startPolling = (deviceCode: string, interval: number) => {
     setPolling(true);
+    // Clear any existing interval before starting a new one
+    if (pollIntervalRef.current !== null) {
+      clearInterval(pollIntervalRef.current);
+    }
     pollIntervalRef.current = setInterval(async () => {
       try {
         const res = await fetch(`${API_BASE}/api/auth/github/device/poll`, {

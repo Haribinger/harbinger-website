@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { ChatMsg } from "@/lib/demo/types";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMessage from "./ChatMessage";
 
@@ -8,7 +8,7 @@ interface ChatMessagesProps {
   messages: ChatMsg[];
 }
 
-export default function ChatMessages({ messages }: ChatMessagesProps) {
+const ChatMessages = memo(function ChatMessages({ messages }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,7 +28,6 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
                 duration: 0.3,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              layout="position"
             >
               <ChatMessage msg={msg} />
             </motion.div>
@@ -38,4 +37,6 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
       </div>
     </ScrollArea>
   );
-}
+});
+
+export default ChatMessages;
