@@ -1,10 +1,16 @@
 package api
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
+	"net/mail"
+	"sync"
 	"time"
+	"unicode"
 
 	"github.com/harbinger-ai/harbinger/internal/agent"
 	"github.com/harbinger-ai/harbinger/internal/auth"
@@ -19,10 +25,14 @@ import (
 const maxBodyBytes = 1 << 16 // 64 KiB
 
 type Handlers struct {
-	jwtAuth   *auth.JWTAuth
-	scanner   *scanpkg.Scanner
-	credits   *credits.Manager
-	stripe    *credits.StripeIntegration
+	jwtAuth *auth.JWTAuth
+	scanner *scanpkg.Scanner
+	credits *credits.Manager
+	stripe  *credits.StripeIntegration
+
+	// In-memory user store (to be replaced with database)
+	usersMu sync.RWMutex
+	users   map[string]*models.User // keyed by email
 }
 
 func NewHandlers(jwtAuth *auth.JWTAuth, scanner *scanpkg.Scanner, creditsMgr *credits.Manager, stripeSvc *credits.StripeIntegration) *Handlers {
@@ -31,6 +41,7 @@ func NewHandlers(jwtAuth *auth.JWTAuth, scanner *scanpkg.Scanner, creditsMgr *cr
 		scanner: scanner,
 		credits: creditsMgr,
 		stripe:  stripeSvc,
+		users:   make(map[string]*models.User),
 	}
 }
 
@@ -52,6 +63,36 @@ type authResponse struct {
 	User  *models.User `json:"user"`
 }
 
+// generateUserID produces a cryptographically random user ID.
+func generateUserID() (string, error) {
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return "user-" + hex.EncodeToString(b), nil
+}
+
+// validatePasswordStrength checks that a password is at least 8 characters
+// and contains both a letter and a digit.
+func validatePasswordStrength(password string) bool {
+	if len(password) < 8 {
+		return false
+	}
+	var hasLetter, hasDigit bool
+	for _, c := range password {
+		if unicode.IsLetter(c) {
+			hasLetter = true
+		}
+		if unicode.IsDigit(c) {
+			hasDigit = true
+		}
+		if hasLetter && hasDigit {
+			return true
+		}
+	}
+	return hasLetter && hasDigit
+}
+
 // Login authenticates a user with email and password and returns a JWT token.
 func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginRequest
@@ -60,23 +101,48 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: look up user in database and verify password
-	// For now, generate a token for demo purposes
-	token, err := h.jwtAuth.GenerateToken("user-1", req.Email, "free")
+	// Validate email format
+	if _, err := mail.ParseAddress(req.Email); err != nil {
+		jsonError(w, "invalid email format", http.StatusBadRequest)
+		return
+	}
+
+	if req.Password == "" {
+		jsonError(w, "password is required", http.StatusBadRequest)
+		return
+	}
+
+	// Look up user by email
+	h.usersMu.RLock()
+	user, exists := h.users[req.Email]
+	h.usersMu.RUnlock()
+
+	if !exists {
+		jsonError(w, "invalid email or password", http.StatusUnauthorized)
+		return
+	}
+
+	// Verify password
+	if !auth.CheckPassword(req.Password, user.PasswordHash) {
+		jsonError(w, "invalid email or password", http.StatusUnauthorized)
+		return
+	}
+
+	token, err := h.jwtAuth.GenerateToken(user.ID, user.Email, user.Plan)
 	if err != nil {
 		jsonError(w, "failed to generate token", http.StatusInternalServerError)
 		return
 	}
 
-	h.credits.InitUser("user-1")
+	h.credits.InitUser(user.ID)
 
 	jsonResponse(w, authResponse{
 		Token: token,
 		User: &models.User{
-			ID:      "user-1",
-			Email:   req.Email,
-			Credits: h.credits.GetBalance("user-1"),
-			Plan:    "free",
+			ID:      user.ID,
+			Email:   user.Email,
+			Credits: h.credits.GetBalance(user.ID),
+			Plan:    user.Plan,
 		},
 	})
 }
@@ -94,17 +160,47 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate email format
+	if _, err := mail.ParseAddress(req.Email); err != nil {
+		jsonError(w, "invalid email format", http.StatusBadRequest)
+		return
+	}
+
+	// Validate password strength
+	if !validatePasswordStrength(req.Password) {
+		jsonError(w, "password must be at least 8 characters and contain both a letter and a digit", http.StatusBadRequest)
+		return
+	}
+
+	// Check if user already exists
+	h.usersMu.RLock()
+	_, exists := h.users[req.Email]
+	h.usersMu.RUnlock()
+	if exists {
+		jsonError(w, "email already registered", http.StatusConflict)
+		return
+	}
+
 	hashedPw, err := auth.HashPassword(req.Password)
 	if err != nil {
 		jsonError(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	apiKey, _ := auth.GenerateAPIKey()
+	apiKey, err := auth.GenerateAPIKey()
+	if err != nil {
+		jsonError(w, "failed to generate API key", http.StatusInternalServerError)
+		return
+	}
 
-	// TODO: store user in database
+	userID, err := generateUserID()
+	if err != nil {
+		jsonError(w, "failed to generate user ID", http.StatusInternalServerError)
+		return
+	}
+
 	user := &models.User{
-		ID:           "user-1",
+		ID:           userID,
 		Email:        req.Email,
 		PasswordHash: hashedPw,
 		APIKey:       apiKey,
@@ -112,6 +208,11 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 		Plan:         "free",
 		CreatedAt:    time.Now(),
 	}
+
+	// Store user
+	h.usersMu.Lock()
+	h.users[req.Email] = user
+	h.usersMu.Unlock()
 
 	h.credits.InitUser(user.ID)
 
@@ -153,15 +254,9 @@ func (h *Handlers) CreateScan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check credits
+	// Atomically check and deduct credits
 	cost := models.ScanCreditCosts[req.ScanType]
-	if !h.credits.CanAfford(userID, cost) {
-		jsonError(w, "insufficient credits", http.StatusPaymentRequired)
-		return
-	}
-
-	// Deduct credits
-	if err := h.credits.Spend(userID, cost); err != nil {
+	if err := h.credits.SpendIfAffordable(userID, cost); err != nil {
 		jsonError(w, err.Error(), http.StatusPaymentRequired)
 		return
 	}
@@ -187,6 +282,19 @@ func (h *Handlers) CancelScan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Verify ownership before allowing cancel
+	active, ok := h.scanner.GetActiveScan(scanID)
+	if !ok {
+		jsonError(w, "scan not found", http.StatusNotFound)
+		return
+	}
+
+	userID := GetUserID(r.Context())
+	if active.Scan.UserID != userID {
+		jsonError(w, "forbidden: you do not own this scan", http.StatusForbidden)
+		return
+	}
+
 	if err := h.scanner.CancelScan(scanID); err != nil {
 		jsonError(w, err.Error(), http.StatusNotFound)
 		return
@@ -204,12 +312,20 @@ func (h *Handlers) GetScan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Verify ownership
+	userID := GetUserID(r.Context())
+	if active.Scan.UserID != userID {
+		jsonError(w, "forbidden: you do not own this scan", http.StatusForbidden)
+		return
+	}
+
 	jsonResponse(w, active.Scan)
 }
 
-// ListScans returns all currently active scans for the server.
+// ListScans returns all currently active scans for the authenticated user.
 func (h *Handlers) ListScans(w http.ResponseWriter, r *http.Request) {
-	scans := h.scanner.ListActiveScans()
+	userID := GetUserID(r.Context())
+	scans := h.scanner.ListActiveScansForUser(userID)
 	jsonResponse(w, scans)
 }
 
@@ -274,11 +390,15 @@ func (h *Handlers) Health(w http.ResponseWriter, r *http.Request) {
 
 func jsonResponse(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		log.Printf("jsonResponse: failed to encode response: %v", err)
+	}
 }
 
 func jsonError(w http.ResponseWriter, message string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{"error": message})
+	if err := json.NewEncoder(w).Encode(map[string]string{"error": message}); err != nil {
+		log.Printf("jsonError: failed to encode error response: %v", err)
+	}
 }

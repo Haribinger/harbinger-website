@@ -168,8 +168,8 @@ function APIKeysTab() {
             <label className="block text-[12px] text-[#888] mb-1.5">Scopes</label>
             <div className="flex flex-wrap gap-2">
               {["scans:read", "scans:write", "findings:read", "findings:write", "credits:read"].map((scope) => (
-                <label key={scope} className="flex items-center gap-1.5 px-2 py-1 bg-white/[0.03] border border-white/[0.06] rounded text-[11px] text-[#888] cursor-pointer hover:border-white/[0.12] transition-colors">
-                  <input type="checkbox" className="rounded border-[#333] bg-transparent" />
+                <label key={scope} htmlFor={`scope-${scope}`} className="flex items-center gap-1.5 px-2 py-1 bg-white/[0.03] border border-white/[0.06] rounded text-[11px] text-[#888] cursor-pointer hover:border-white/[0.12] transition-colors">
+                  <input id={`scope-${scope}`} type="checkbox" className="rounded border-[#333] bg-transparent" />
                   {scope}
                 </label>
               ))}
@@ -405,13 +405,21 @@ function AppearanceTab() {
       <div>
         <label className="block text-[12px] text-[#888] mb-3">Accent Color</label>
         <div className="flex gap-2">
-          {["#00d4ff", "#8b5cf6", "#22c55e", "#f59e0b", "#ef4444", "#ec4899"].map((c) => (
+          {[
+            { color: "#00d4ff", name: "Cyan" },
+            { color: "#8b5cf6", name: "Purple" },
+            { color: "#22c55e", name: "Green" },
+            { color: "#f59e0b", name: "Amber" },
+            { color: "#ef4444", name: "Red" },
+            { color: "#ec4899", name: "Pink" },
+          ].map(({ color, name }) => (
             <button
-              key={c}
+              key={color}
+              aria-label={`Set accent color to ${name}`}
               className={`w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 ${
-                c === "#00d4ff" ? "border-white" : "border-transparent"
+                color === "#00d4ff" ? "border-white" : "border-transparent"
               }`}
-              style={{ backgroundColor: c }}
+              style={{ backgroundColor: color }}
             />
           ))}
         </div>

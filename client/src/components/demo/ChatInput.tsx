@@ -31,6 +31,7 @@ export default function ChatInput({
           <textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            aria-label="Message input"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();

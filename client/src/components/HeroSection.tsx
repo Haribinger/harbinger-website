@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { HARBINGER_LOGO } from "@/const";
 
 const HERO_BG = "https://private-us-east-1.manuscdn.com/sessionFile/QdNVf80RhSj4qt9n6tFkde/sandbox/36LBhrPt2JsliIuBm0wJkZ-img-1_1771976486000_na1fn_aGFyYmluZ2VyLWhlcm8tYmc.png?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvUWROVmY4MFJoU2o0cXQ5bjZ0RmtkZS9zYW5kYm94LzM2TEJoclB0MkpzbGlJdUJtMHdKa1otaW1nLTFfMTc3MTk3NjQ4NjAwMF9uYTFmbl9hR0Z5WW1sdVoyVnlMV2hsY204dFltYy5wbmc~eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsd18xOTIwLGhfMTkyMC9mb3JtYXQsd2VicC9xdWFsaXR5LHFfODAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=FzvSTpY5Wpf5piaLgLcyrahlkaL5NojDOuuXLRBvifTJ8k1ML0CxPY4DqaKjZUQGicMDns8ikKO0PQaq9Tm-xBmz-L7rgBzurs2d8AjGZQs9GR6D7Gi~d4h8kr2Sh67sM56hLd4DbLf2NNA4mbiqPpXBZ93hh9xPq3m9qpvx-Yn7XlLxPE3LMX9bfszxb0XZ3BGwHTnptECQmcoa8Cu2YNQ3J0hC19RA3VdOwSGI6UErmMT1L0U3KSDGAkfau0UdjX891nuMZx-P45LO6zv2n9gFYQUZN4gS9O318ImWSEnVlSM6hMIYAVgojHpKTSpXrW3vko4yV0dxzyIFtfnlCw__";
 
@@ -87,7 +88,7 @@ export default function HeroSection() {
 
             <div className="flex items-center gap-4 mb-1">
               <img
-                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663114013319/TAqStkfvjTyDDNXQ.png"
+                src={HARBINGER_LOGO}
                 alt="Harbinger"
                 className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-contain"
               />

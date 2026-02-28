@@ -45,7 +45,6 @@ function Router() {
         <Route path={"/mission-control"} component={MissionControl} />
         <Route path={"/login"} component={Auth} />
         <Route path={"/signup"} component={Auth} />
-        <Route path={"/404"} component={NotFound} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

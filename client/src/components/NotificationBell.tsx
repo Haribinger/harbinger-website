@@ -51,6 +51,8 @@ export default function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
+        aria-label="Notifications"
+        aria-haspopup="true"
         className="relative p-1.5 text-[#888] hover:text-white transition-colors"
       >
         <Bell className="w-4 h-4" />

@@ -401,7 +401,7 @@ function AgentGrid({ agents, title, accent }: { agents: AgentInfo[]; title: stri
 
 function LogPanel({ logs }: { logs: string[] }) {
   return (
-    <GlowCard className="h-full">
+    <GlowCard className="min-h-0">
       <div className="p-4 border-b border-white/[0.04] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Terminal className="w-4 h-4 text-[#22c55e]" />
@@ -602,13 +602,13 @@ export default function MissionControl() {
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
           {/* Left: Pipeline + Log */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-4 min-h-0">
             <PipelinePanel steps={pipelineSteps} onRun={simulatePipeline} running={pipelineRunning} />
             <LogPanel logs={logs} />
           </div>
 
           {/* Right: Health + Repos */}
-          <div className="space-y-4">
+          <div className="space-y-4 min-h-0">
             <HealthPanel metrics={HEALTH_METRICS} />
             <RepoPanel repos={REPOS} />
           </div>

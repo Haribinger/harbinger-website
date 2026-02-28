@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import { Github, Key, Smartphone, ArrowRight, Loader2, Copy, Check, ExternalLink } from "lucide-react";
+import { HARBINGER_LOGO } from "@/const";
 
 type Tab = "oauth" | "device" | "token";
 
@@ -81,9 +82,20 @@ export default function Auth() {
     }
   };
 
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Clear polling interval on unmount
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current !== null) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, []);
+
   const startPolling = (deviceCode: string, interval: number) => {
     setPolling(true);
-    const poll = setInterval(async () => {
+    pollIntervalRef.current = setInterval(async () => {
       try {
         const res = await fetch(`${API_BASE}/api/auth/github/device/poll`, {
           method: "POST",
@@ -92,12 +104,14 @@ export default function Auth() {
         });
         const data = await res.json();
         if (data.token) {
-          clearInterval(poll);
+          if (pollIntervalRef.current !== null) clearInterval(pollIntervalRef.current);
+          pollIntervalRef.current = null;
           setPolling(false);
           // Redirect to main app with token
           window.location.href = `${API_BASE}/login?token=${data.token}`;
         } else if (data.error === "expired") {
-          clearInterval(poll);
+          if (pollIntervalRef.current !== null) clearInterval(pollIntervalRef.current);
+          pollIntervalRef.current = null;
           setPolling(false);
           setDevice(null);
           setError("Device code expired. Try again.");
@@ -148,7 +162,7 @@ export default function Auth() {
           {/* Header */}
           <div className="text-center mb-8">
             <img
-              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663114013319/TAqStkfvjTyDDNXQ.png"
+              src={HARBINGER_LOGO}
               alt="Harbinger"
               className="w-12 h-12 mx-auto mb-4"
             />
@@ -165,6 +179,8 @@ export default function Auth() {
                 key={t.id}
                 role="tab"
                 aria-selected={tab === t.id}
+                aria-controls={`tabpanel-${t.id}`}
+                id={`tab-${t.id}`}
                 onClick={() => { setTab(t.id); setError(null); }}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[12px] font-medium transition-colors ${
                   tab === t.id
@@ -186,7 +202,12 @@ export default function Auth() {
           )}
 
           {/* Tab content */}
-          <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-6">
+          <div
+            role="tabpanel"
+            id={`tabpanel-${tab}`}
+            aria-labelledby={`tab-${tab}`}
+            className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-6"
+          >
             {tab === "oauth" && (
               <div className="space-y-4">
                 <p className="text-[12px] text-[#666] leading-relaxed">

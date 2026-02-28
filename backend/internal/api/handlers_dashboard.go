@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/mail"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/harbinger-ai/harbinger/internal/auth"
@@ -16,7 +19,7 @@ import (
 func (h *Handlers) DashboardStats(w http.ResponseWriter, r *http.Request) {
 	userID := GetUserID(r.Context())
 	balance := h.credits.GetBalance(userID)
-	scans := h.scanner.ListActiveScans()
+	scans := h.scanner.ListActiveScansForUser(userID)
 
 	jsonResponse(w, map[string]interface{}{
 		"total_scans":   len(scans),
@@ -46,7 +49,13 @@ func (h *Handlers) ListNotifications(w http.ResponseWriter, r *http.Request) {
 
 // MarkNotificationRead marks a specific notification as read.
 func (h *Handlers) MarkNotificationRead(w http.ResponseWriter, r *http.Request) {
-	// TODO: mark notification read in database
+	notifID := r.PathValue("id")
+	if notifID == "" {
+		jsonError(w, "notification ID required", http.StatusBadRequest)
+		return
+	}
+
+	// TODO: mark notification read in database using notifID
 	jsonResponse(w, map[string]string{"status": "ok"})
 }
 
@@ -72,6 +81,21 @@ func (h *Handlers) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "invalid request", http.StatusBadRequest)
 		return
 	}
+
+	// Validate email format if provided
+	if req.Email != "" {
+		if _, err := mail.ParseAddress(req.Email); err != nil {
+			jsonError(w, "invalid email format", http.StatusBadRequest)
+			return
+		}
+	}
+
+	// Validate name length
+	if len(req.Name) > 100 {
+		jsonError(w, "name must be 100 characters or fewer", http.StatusBadRequest)
+		return
+	}
+
 	// TODO: update in database
 	jsonResponse(w, map[string]string{"status": "updated"})
 }
@@ -120,7 +144,13 @@ func (h *Handlers) CreateAPIKey(w http.ResponseWriter, r *http.Request) {
 
 // RevokeAPIKey deletes the specified API key, immediately invalidating it.
 func (h *Handlers) RevokeAPIKey(w http.ResponseWriter, r *http.Request) {
-	// TODO: delete from database
+	keyID := r.PathValue("id")
+	if keyID == "" {
+		jsonError(w, "API key ID required", http.StatusBadRequest)
+		return
+	}
+
+	// TODO: delete from database using keyID
 	jsonResponse(w, map[string]string{"status": "revoked"})
 }
 
@@ -154,6 +184,27 @@ func (h *Handlers) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// SSRF protection: validate webhook URL uses https and has valid hostname
+	parsed, err := url.Parse(req.URL)
+	if err != nil {
+		jsonError(w, "invalid webhook URL", http.StatusBadRequest)
+		return
+	}
+	if !strings.EqualFold(parsed.Scheme, "https") {
+		jsonError(w, "webhook URL must use https scheme", http.StatusBadRequest)
+		return
+	}
+	if parsed.Hostname() == "" {
+		jsonError(w, "webhook URL must have a valid hostname", http.StatusBadRequest)
+		return
+	}
+	// Block common internal hostnames
+	hostname := strings.ToLower(parsed.Hostname())
+	if hostname == "localhost" || hostname == "127.0.0.1" || hostname == "::1" || hostname == "0.0.0.0" || strings.HasSuffix(hostname, ".internal") || strings.HasSuffix(hostname, ".local") {
+		jsonError(w, "webhook URL must not point to internal addresses", http.StatusBadRequest)
+		return
+	}
+
 	// TODO: store in database
 	w.WriteHeader(http.StatusCreated)
 	jsonResponse(w, webhookConfig{
@@ -166,6 +217,13 @@ func (h *Handlers) CreateWebhook(w http.ResponseWriter, r *http.Request) {
 
 // DeleteWebhook removes a webhook endpoint configuration.
 func (h *Handlers) DeleteWebhook(w http.ResponseWriter, r *http.Request) {
+	webhookID := r.PathValue("id")
+	if webhookID == "" {
+		jsonError(w, "webhook ID required", http.StatusBadRequest)
+		return
+	}
+
+	// TODO: delete from database using webhookID
 	jsonResponse(w, map[string]string{"status": "deleted"})
 }
 

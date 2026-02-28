@@ -260,7 +260,7 @@ export default function Dashboard() {
           </div>
 
           {/* Recent Scans */}
-          <div className="bg-[#0d0d14] border border-white/[0.04] rounded-lg mb-6">
+          <div className="bg-[#0d0d14] border border-white/[0.04] rounded-lg mb-6 overflow-hidden">
             <div className="p-4 border-b border-white/[0.04] flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Activity className="w-4 h-4 text-[#22c55e]" />

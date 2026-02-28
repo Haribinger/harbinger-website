@@ -9,8 +9,17 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/harbinger-ai/harbinger/internal/auth"
 	"github.com/harbinger-ai/harbinger/internal/models"
 )
+
+// maxSubscriptionsPerClient caps the number of scan IDs a single client may
+// subscribe to, preventing resource exhaustion.
+const maxSubscriptionsPerClient = 50
+
+// ScanOwnershipChecker is a function type that verifies whether a user owns
+// a particular scan. Returns true if the user owns the scan.
+type ScanOwnershipChecker func(scanID, userID string) bool
 
 // newUpgrader returns a WebSocket upgrader that validates origins against the
 // provided allowed-origins list (e.g. from config.AllowedOrigins). Non-browser
@@ -45,17 +54,21 @@ type WSClient struct {
 }
 
 type WSHub struct {
-	mu       sync.RWMutex
-	clients  map[*WSClient]bool
-	upgrader websocket.Upgrader
+	mu             sync.RWMutex
+	clients        map[*WSClient]bool
+	upgrader       websocket.Upgrader
+	jwtAuth        *auth.JWTAuth
+	ownershipCheck ScanOwnershipChecker
 }
 
 // NewWSHub creates a WebSocket hub that validates connection origins against
-// the provided allowedOrigins list.
-func NewWSHub(allowedOrigins []string) *WSHub {
+// the provided allowedOrigins list and requires JWT authentication.
+func NewWSHub(allowedOrigins []string, jwtAuth *auth.JWTAuth, ownershipCheck ScanOwnershipChecker) *WSHub {
 	return &WSHub{
-		clients:  make(map[*WSClient]bool),
-		upgrader: newUpgrader(allowedOrigins),
+		clients:        make(map[*WSClient]bool),
+		upgrader:       newUpgrader(allowedOrigins),
+		jwtAuth:        jwtAuth,
+		ownershipCheck: ownershipCheck,
 	}
 }
 
@@ -125,22 +138,31 @@ func (h *WSHub) BroadcastToUser(userID string, event models.ScanEvent) {
 	}
 }
 
-// HandleWS upgrades an HTTP connection to WebSocket and registers the client.
+// HandleWS upgrades an HTTP connection to WebSocket after validating JWT auth
+// via query parameter.
 func (h *WSHub) HandleWS(w http.ResponseWriter, r *http.Request) {
+	// Require JWT token from query param for WebSocket connections
+	tokenStr := r.URL.Query().Get("token")
+	if tokenStr == "" {
+		http.Error(w, `{"error":"missing authentication token"}`, http.StatusUnauthorized)
+		return
+	}
+
+	claims, err := h.jwtAuth.ValidateToken(tokenStr)
+	if err != nil {
+		http.Error(w, `{"error":"invalid or expired token"}`, http.StatusUnauthorized)
+		return
+	}
+
 	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("ws: upgrade error: %v", err)
 		return
 	}
 
-	userID := r.URL.Query().Get("user_id")
-	if userID == "" {
-		userID = "anonymous"
-	}
-
 	client := &WSClient{
 		conn:    conn,
-		userID:  userID,
+		userID:  claims.UserID,
 		scanIDs: make(map[string]bool),
 		send:    make(chan []byte, 256),
 	}
@@ -182,6 +204,18 @@ func (c *WSClient) readPump(hub *WSHub) {
 			switch msg.Type {
 			case "subscribe":
 				c.mu.Lock()
+				// Cap subscriptions per client
+				if len(c.scanIDs) >= maxSubscriptionsPerClient {
+					c.mu.Unlock()
+					log.Printf("ws: client %s hit subscription limit (%d)", c.userID, maxSubscriptionsPerClient)
+					continue
+				}
+				// Verify scan ownership before allowing subscription
+				if hub.ownershipCheck != nil && !hub.ownershipCheck(msg.ScanID, c.userID) {
+					c.mu.Unlock()
+					log.Printf("ws: client %s denied subscription to scan %s (not owner)", c.userID, msg.ScanID)
+					continue
+				}
 				c.scanIDs[msg.ScanID] = true
 				c.mu.Unlock()
 				log.Printf("ws: client subscribed to scan %s", msg.ScanID)

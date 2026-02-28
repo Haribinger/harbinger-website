@@ -34,12 +34,25 @@ type Config struct {
 	WebhookURL     string
 }
 
+// isProduction returns true when the runtime environment signals production mode.
+func isProduction() bool {
+	for _, key := range []string{"GO_ENV", "APP_ENV"} {
+		if strings.EqualFold(os.Getenv(key), "production") {
+			return true
+		}
+	}
+	return false
+}
+
 // Load reads configuration from environment variables and validates critical
 // security settings, warning loudly when insecure defaults are detected.
 func Load() *Config {
 	jwtSecret := getEnv("JWT_SECRET", defaultJWTSecret)
 	if jwtSecret == defaultJWTSecret {
-		log.Println("WARNING: JWT_SECRET is set to the insecure default — set a strong secret before deploying to production")
+		if isProduction() {
+			log.Fatal("FATAL: JWT_SECRET is set to the insecure default in a production environment. Set a strong secret before deploying.")
+		}
+		log.Println("WARNING: JWT_SECRET is set to the insecure default -- set a strong secret before deploying to production")
 	} else if len(jwtSecret) < minJWTSecretLen {
 		log.Printf("WARNING: JWT_SECRET is only %d bytes; a minimum of %d bytes is required for HMAC-SHA256 security", len(jwtSecret), minJWTSecretLen)
 	}
@@ -49,7 +62,7 @@ func Load() *Config {
 
 	return &Config{
 		Port:           getEnv("PORT", "8080"),
-		DatabaseURL:    getEnv("DATABASE_URL", "postgres://harbinger:harbinger@localhost:5432/harbinger?sslmode=disable"),
+		DatabaseURL:    getEnv("DATABASE_URL", "postgres://harbinger:harbinger@localhost:5432/harbinger?sslmode=require"),
 		JWTSecret:      jwtSecret,
 		JWTExpiry:      parseDuration(getEnv("JWT_EXPIRY", "24h")),
 		StripeKey:      getEnv("STRIPE_SECRET_KEY", ""),
@@ -87,9 +100,12 @@ func getEnv(key, fallback string) string {
 
 func getEnvInt(key string, fallback int) int {
 	if v := os.Getenv(key); v != "" {
-		if n, err := strconv.Atoi(v); err == nil {
-			return n
+		n, err := strconv.Atoi(v)
+		if err != nil {
+			log.Printf("WARNING: invalid integer value %q for %s, using fallback %d: %v", v, key, fallback, err)
+			return fallback
 		}
+		return n
 	}
 	return fallback
 }
@@ -97,6 +113,7 @@ func getEnvInt(key string, fallback int) int {
 func parseDuration(s string) time.Duration {
 	d, err := time.ParseDuration(s)
 	if err != nil {
+		log.Printf("WARNING: invalid duration %q, falling back to 24h: %v", s, err)
 		return 24 * time.Hour
 	}
 	return d

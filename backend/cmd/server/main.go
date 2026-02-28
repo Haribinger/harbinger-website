@@ -58,14 +58,31 @@ func main() {
 		cfg.AllowedOrigins[0],
 	)
 
-	// WebSocket hub
-	wsHub := api.NewWSHub(cfg.AllowedOrigins)
-
 	// Agent executor
 	executor := agent.NewExecutor(orch)
 
+	// We need the scanner for the ownership checker, but the scanner needs the
+	// broadcaster (which references wsHub). Use a pointer that we fill in after
+	// both are created.
+	var scanner *scan.Scanner
+
+	// Scan ownership checker for WebSocket subscriptions
+	ownershipCheck := func(scanID, userID string) bool {
+		if scanner == nil {
+			return false
+		}
+		active, ok := scanner.GetActiveScan(scanID)
+		if !ok {
+			return false
+		}
+		return active.Scan.UserID == userID
+	}
+
+	// WebSocket hub (now requires JWT auth and ownership checker)
+	wsHub := api.NewWSHub(cfg.AllowedOrigins, jwtAuth, ownershipCheck)
+
 	// Scanner with WebSocket broadcaster
-	scanner := scan.NewScanner(executor, func(scanID string, event models.ScanEvent) {
+	scanner = scan.NewScanner(executor, func(scanID string, event models.ScanEvent) {
 		wsHub.BroadcastToScan(scanID, event)
 
 		// Audit log scan events
