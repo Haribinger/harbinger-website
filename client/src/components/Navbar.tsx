@@ -67,10 +67,16 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <a
+            href="/scan"
+            className="hidden sm:inline-flex px-3 py-1.5 text-[13px] text-[#00d4ff] hover:text-[#00d4ff]/80 transition-colors font-medium"
+          >
+            Scan
+          </a>
+          <a
             href="/demo"
             className="hidden sm:inline-flex px-3 py-1.5 text-[13px] text-[#4ade80] hover:text-[#4ade80]/80 transition-colors font-medium"
           >
-            Try Demo
+            Demo
           </a>
           <a
             href="https://github.com/Haribinger/Harbinger"
@@ -114,8 +120,11 @@ export default function Navbar() {
               {l.label}
             </a>
           ))}
+          <a href="/scan" className="block px-6 py-2.5 text-sm text-[#00d4ff] hover:text-[#00d4ff]/80 transition-colors">
+            Scan
+          </a>
           <a href="/demo" className="block px-6 py-2.5 text-sm text-[#4ade80] hover:text-[#4ade80]/80 transition-colors">
-            Try Demo
+            Demo
           </a>
         </div>
       )}

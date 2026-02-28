@@ -9,12 +9,14 @@ import Status from "./pages/Status";
 import Docs from "./pages/Docs";
 import Auth from "./pages/Auth";
 import Demo from "./pages/Demo";
+import Scan from "./pages/Scan";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/demo"} component={Demo} />
+      <Route path={"/scan"} component={Scan} />
       <Route path={"/docs"} component={Docs} />
       <Route path={"/status"} component={Status} />
       <Route path={"/login"} component={Auth} />
