@@ -6,8 +6,8 @@ import (
 )
 
 type Manager struct {
-	mu       sync.RWMutex
-	balances map[string]int // userID -> credits
+	mu             sync.RWMutex
+	balances       map[string]int // userID -> credits
 	defaultCredits int
 }
 
@@ -47,6 +47,26 @@ func (m *Manager) InitUser(userID string) {
 // Spend deducts amount credits from userID's balance, returning an error if
 // the balance is insufficient.
 func (m *Manager) Spend(userID string, amount int) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	balance, ok := m.balances[userID]
+	if !ok {
+		balance = m.defaultCredits
+		m.balances[userID] = balance
+	}
+
+	if balance < amount {
+		return fmt.Errorf("insufficient credits: have %d, need %d", balance, amount)
+	}
+
+	m.balances[userID] = balance - amount
+	return nil
+}
+
+// SpendIfAffordable atomically checks whether userID can afford amount and
+// deducts it in a single lock acquisition, preventing TOCTOU race conditions.
+func (m *Manager) SpendIfAffordable(userID string, amount int) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 

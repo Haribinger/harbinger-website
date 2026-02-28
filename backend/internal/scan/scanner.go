@@ -28,6 +28,10 @@ type ActiveScan struct {
 	Findings  []*models.Finding
 	Events    []models.ScanEvent
 	StartedAt time.Time
+
+	// mu protects mutable Scan fields (Status, FinishedAt) from concurrent
+	// writes between executeScan and CancelScan.
+	mu sync.Mutex
 }
 
 func NewScanner(executor *agent.Executor, broadcaster EventBroadcaster) *Scanner {
@@ -39,7 +43,10 @@ func NewScanner(executor *agent.Executor, broadcaster EventBroadcaster) *Scanner
 }
 
 func (s *Scanner) StartScan(ctx context.Context, userID, target, scanType string) (*models.Scan, error) {
-	scanID := generateScanID()
+	scanID, err := generateScanID()
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate scan ID: %w", err)
+	}
 	now := time.Now()
 
 	scan := &models.Scan{
@@ -53,7 +60,8 @@ func (s *Scanner) StartScan(ctx context.Context, userID, target, scanType string
 		CreatedAt:   now,
 	}
 
-	scanCtx, cancel := context.WithTimeout(ctx, 30*time.Minute)
+	// Use context.Background() so the scan outlives the HTTP request.
+	scanCtx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 
 	active := &ActiveScan{
 		Scan:      scan,
@@ -129,8 +137,9 @@ func (s *Scanner) executeScan(ctx context.Context, active *ActiveScan) {
 		}
 	}
 
-	// Complete scan
+	// Complete scan - use per-scan mutex for Scan field writes
 	now := time.Now()
+	active.mu.Lock()
 	scan.FinishedAt = &now
 
 	if ctx.Err() != nil {
@@ -138,6 +147,7 @@ func (s *Scanner) executeScan(ctx context.Context, active *ActiveScan) {
 	} else {
 		scan.Status = "completed"
 	}
+	active.mu.Unlock()
 
 	// Broadcast completion
 	s.broadcastEvent(scan.ID, models.ScanEvent{
@@ -166,7 +176,10 @@ func (s *Scanner) CancelScan(scanID string) error {
 	}
 
 	active.Cancel()
+	// Use per-scan mutex for safe Status write
+	active.mu.Lock()
 	active.Scan.Status = "cancelled"
+	active.mu.Unlock()
 	return nil
 }
 
@@ -188,14 +201,29 @@ func (s *Scanner) ListActiveScans() []*models.Scan {
 	return scans
 }
 
+// ListActiveScansForUser returns only the scans belonging to the specified user.
+func (s *Scanner) ListActiveScansForUser(userID string) []*models.Scan {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	scans := make([]*models.Scan, 0)
+	for _, active := range s.activeScans {
+		if active.Scan.UserID == userID {
+			scans = append(scans, active.Scan)
+		}
+	}
+	return scans
+}
+
 func (s *Scanner) broadcastEvent(scanID string, event models.ScanEvent) {
 	if s.broadcaster != nil {
 		s.broadcaster(scanID, event)
 	}
 }
 
-func generateScanID() string {
+func generateScanID() (string, error) {
 	b := make([]byte, 12)
-	_, _ = rand.Read(b)
-	return "scan_" + hex.EncodeToString(b)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return "scan_" + hex.EncodeToString(b), nil
 }

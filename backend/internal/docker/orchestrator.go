@@ -16,11 +16,11 @@ import (
 )
 
 type ContainerInfo struct {
-	ID       string
-	Name     string
-	Image    string
-	AgentID  string
-	Status   string
+	ID        string
+	Name      string
+	Image     string
+	AgentID   string
+	Status    string
 	StartedAt time.Time
 }
 
@@ -32,12 +32,12 @@ type LogLine struct {
 }
 
 type Orchestrator struct {
-	client      *client.Client
-	networkName string
+	client        *client.Client
+	networkName   string
 	maxContainers int
-	mu          sync.RWMutex
-	containers  map[string]*ContainerInfo
-	logChannels map[string]chan LogLine
+	mu            sync.RWMutex
+	containers    map[string]*ContainerInfo
+	logChannels   map[string]chan LogLine
 }
 
 func NewOrchestrator(networkName string, maxContainers int) (*Orchestrator, error) {
@@ -102,13 +102,15 @@ func (o *Orchestrator) SpawnContainer(ctx context.Context, agentID, imageName st
 		log.Printf("warning: image pull failed for %s: %v (trying with local)", imageName, err)
 	}
 
+	pidsLimit := int64(256)
+
 	resp, err := o.client.ContainerCreate(ctx,
 		&container.Config{
 			Image: imageName,
 			Cmd:   cmd,
 			Env:   envVars,
 			Labels: map[string]string{
-				"harbinger.agent": agentID,
+				"harbinger.agent":   agentID,
 				"harbinger.managed": "true",
 			},
 			Tty: false,
@@ -118,10 +120,17 @@ func (o *Orchestrator) SpawnContainer(ctx context.Context, agentID, imageName st
 			Resources: container.Resources{
 				Memory:   512 * 1024 * 1024, // 512MB
 				NanoCPUs: 1_000_000_000,     // 1 CPU
+				PidsLimit: &pidsLimit,
 			},
-			AutoRemove: false,
-			SecurityOpt: []string{"no-new-privileges:true"},
-			ReadonlyRootfs: false,
+			AutoRemove:     false,
+			SecurityOpt:    []string{"no-new-privileges:true"},
+			ReadonlyRootfs: true,
+			Tmpfs: map[string]string{
+				"/tmp":                    "rw,noexec,nosuid,size=64m",
+				"/home/harbinger/output": "rw,noexec,nosuid,size=128m",
+			},
+			CapDrop: []string{"ALL"},
+			CapAdd:  []string{"NET_RAW"},
 		},
 		nil, nil, containerName,
 	)
@@ -169,6 +178,12 @@ func (o *Orchestrator) StreamLogs(ctx context.Context, containerID string) (<-ch
 
 	ch := make(chan LogLine, 100)
 
+	// Store logChannels entry BEFORE starting the goroutine to prevent the race
+	// where a caller reads logChannels before the goroutine has stored the entry.
+	o.mu.Lock()
+	o.logChannels[containerID] = ch
+	o.mu.Unlock()
+
 	go func() {
 		defer close(ch)
 		defer reader.Close()
@@ -209,10 +224,6 @@ func (o *Orchestrator) StreamLogs(ctx context.Context, containerID string) (<-ch
 			}
 		}
 	}()
-
-	o.mu.Lock()
-	o.logChannels[containerID] = ch
-	o.mu.Unlock()
 
 	return ch, nil
 }

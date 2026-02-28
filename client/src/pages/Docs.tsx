@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { docs } from "@/docs";
@@ -17,7 +16,6 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export default function Docs() {
-  const [location, setLocation] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Parse section from URL hash or query

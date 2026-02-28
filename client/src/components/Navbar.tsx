@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import NotificationBell from "./NotificationBell";
+import { HARBINGER_LOGO } from "@/const";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -44,7 +45,7 @@ export default function Navbar() {
           className="flex items-center gap-2 group"
         >
           <img
-            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663114013319/TAqStkfvjTyDDNXQ.png"
+            src={HARBINGER_LOGO}
             alt="Harbinger"
             className="w-7 h-7 object-contain"
           />
@@ -109,6 +110,8 @@ export default function Navbar() {
           </a>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
             className="lg:hidden p-1.5 text-[#888] hover:text-white"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

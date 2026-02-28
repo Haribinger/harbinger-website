@@ -335,6 +335,7 @@ export default function ScanResults() {
                 placeholder="Search findings..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search findings"
                 className="w-full bg-[#0d0d14] border border-white/[0.04] rounded-lg pl-9 pr-3 py-2 text-[13px] text-white placeholder-[#444] focus:border-[#00d4ff]/30 focus:outline-none transition-colors"
               />
             </div>

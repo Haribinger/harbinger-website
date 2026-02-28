@@ -243,11 +243,9 @@ export default function Scan() {
       {/* Header */}
       <div className="border-b border-white/[0.06] bg-[#08080d]">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Link href="/">
-            <a className="flex items-center gap-2 text-[#555] hover:text-white transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-xs font-mono">HARBINGER</span>
-            </a>
+          <Link href="/" className="flex items-center gap-2 text-[#555] hover:text-white transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-xs font-mono">HARBINGER</span>
           </Link>
           <div className="w-px h-5 bg-white/[0.06]" />
           <h1 className="text-sm font-display font-semibold">Security Scanner</h1>
@@ -389,7 +387,7 @@ export default function Scan() {
                 </div>
 
                 {/* Log content */}
-                <div className="h-[500px] overflow-y-auto p-3 font-mono text-xs space-y-0.5">
+                <div className="max-h-[50vh] overflow-y-auto p-3 font-mono text-xs space-y-0.5">
                   <AnimatePresence initial={false}>
                     {logs.map((log) => (
                       <motion.div
@@ -551,16 +549,14 @@ export default function Scan() {
               </div>
 
               {/* Credits */}
-              <Link href="/pricing">
-                <a className="block rounded-lg border border-white/[0.06] bg-[#0d0d15] p-4 hover:border-[#00d4ff]/20 transition-colors">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-[#555]" />
-                    <span className="text-[10px] font-mono text-[#555] uppercase tracking-wider">
-                      Need more credits?
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#00d4ff] mt-1">Purchase credit packs →</p>
-                </a>
+              <Link href="/pricing" className="block rounded-lg border border-white/[0.06] bg-[#0d0d15] p-4 hover:border-[#00d4ff]/20 transition-colors">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-[#555]" />
+                  <span className="text-[10px] font-mono text-[#555] uppercase tracking-wider">
+                    Need more credits?
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#00d4ff] mt-1">Purchase credit packs →</p>
               </Link>
             </div>
           </div>

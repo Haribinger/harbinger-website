@@ -76,9 +76,10 @@ func (j *JWTAuth) ValidateToken(tokenStr string) (*Claims, error) {
 	return claims, nil
 }
 
-// HashPassword hashes a plaintext password with bcrypt at the default cost factor.
+// HashPassword hashes a plaintext password with bcrypt at cost 12 for stronger
+// resistance against brute-force attacks.
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	return string(bytes), err
 }
 
