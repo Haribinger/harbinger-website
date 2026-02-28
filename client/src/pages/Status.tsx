@@ -9,22 +9,25 @@ interface StatusItem {
 }
 
 const services: StatusItem[] = [
-  { name: "Go Backend API", status: "operational", desc: "Core API server — health checks, auth, agents, workflows" },
-  { name: "React Frontend", status: "operational", desc: "19-page SPA with Obsidian Command design system" },
-  { name: "PostgreSQL + pgvector", status: "operational", desc: "Primary database with vector search support" },
+  { name: "Go Backend API", status: "operational", desc: "26 endpoints — auth, scans, credits, dashboard, API keys, webhooks, findings" },
+  { name: "React Frontend", status: "operational", desc: "12-page SPA with lazy loading, notifications, and code splitting" },
+  { name: "Docker Orchestrator", status: "operational", desc: "Docker SDK — container spawning with resource limits and security opts" },
+  { name: "WebSocket Hub", status: "operational", desc: "Real-time scan events streamed to subscribed clients" },
+  { name: "PostgreSQL", status: "operational", desc: "Primary database — users, scans, findings, credits, audit log" },
   { name: "Redis", status: "operational", desc: "Cache layer and session store" },
-  { name: "Neo4j Knowledge Graph", status: "operational", desc: "Entity-relationship graph for findings and intelligence" },
-  { name: "Nginx Reverse Proxy", status: "operational", desc: "TLS termination, routing, security headers" },
-  { name: "HexStrike MCP", status: "operational", desc: "150+ security tool MCP server" },
-  { name: "PentAGI MCP", status: "operational", desc: "Autonomous agent system MCP server" },
-  { name: "RedTeam MCP", status: "operational", desc: "Red team operations MCP server" },
-  { name: "MCP-UI", status: "operational", desc: "Visualization and monitoring MCP server" },
+  { name: "Recon Container", status: "operational", desc: "subfinder, httpx, dnsx, amass, nmap, dirsearch" },
+  { name: "Scanner Container", status: "operational", desc: "nuclei, katana, sqlmap, nikto, xsstrike" },
+  { name: "Cloud Container", status: "operational", desc: "prowler, scoutsuite, checkov, aws-cli, gcloud" },
+  { name: "OSINT Container", status: "operational", desc: "theHarvester, sherlock, shodan, censys, spiderfoot" },
+  { name: "Exploit Container", status: "operational", desc: "impacket, crackmapexec, wpscan, pwntools" },
+  { name: "Stripe Payments", status: "operational", desc: "Credit purchase via Stripe Checkout" },
 ];
 
 const milestones = [
-  { version: "v1.1.0", date: "Feb 2026", tag: "Latest", items: ["Autonomous Intelligence — 60s thinking loops with swarm awareness", "5-dimension operational scanning per agent", "Autonomous Dashboard — approve, reject, implement proposals", "Meta-Cognition SOUL.md for all 12 agents", "19 pages, 19 Zustand stores, 100+ backend endpoints"] },
-  { version: "v1.0.0", date: "Feb 2026", tag: null, items: ["Production release — all blockers resolved", "3-method auth: OAuth + Device Flow + PAT", "11-agent roster with specialized capabilities", "Setup wizard with validation", "19-page React SPA with Obsidian Command design"] },
-  { version: "v0.9.5", date: "Jan 2026", tag: null, items: ["Production security hardening", "OAuth CSRF protection + TOTP verification", "Error sanitization + Docker action whitelist", "Rate limiting + security headers (CSP, HSTS)"] },
+  { version: "v1.5.0", date: "Feb 2026", tag: "Latest", items: ["12 pages with lazy loading — Dashboard, Settings, Scan Results, Mission Control", "45 Claude Code agents — 7 automation, 6 workflow, 32 specialist", "Master orchestrator pipeline with dependency-aware execution", "Notification system, API key management, webhook configuration", "26 backend API endpoints with full CRUD"] },
+  { version: "v1.2.0", date: "Feb 2026", tag: null, items: ["Agent swarm with real Docker container orchestration", "5 security tool images — recon, scanner, cloud, osint, exploit", "WebSocket hub for live scan event streaming", "Go backend with Docker SDK, JWT auth, Stripe credits", "Kubernetes manifests and deployment scripts"] },
+  { version: "v1.1.0", date: "Feb 2026", tag: null, items: ["Autonomous Intelligence — 60s thinking loops with swarm awareness", "5-dimension operational scanning per agent", "Autonomous Dashboard — approve, reject, implement proposals", "Meta-Cognition SOUL.md for all 12 agents"] },
+  { version: "v1.0.0", date: "Feb 2026", tag: null, items: ["Production release — all blockers resolved", "3-method auth: OAuth + Device Flow + PAT", "11-agent roster with specialized capabilities", "Docker Compose with health checks on all services"] },
   { version: "v0.9.0", date: "Jan 2026", tag: null, items: ["4 MCP plugin servers integrated", "Smart model router — 5 tiers, local-first", "Go backend with 44+ routes", "Docker Compose orchestration for 10 services"] },
 ];
 
@@ -49,17 +52,17 @@ export default function Status() {
           <CheckCircle className="w-5 h-5 text-[#4ade80]" />
           <div>
             <div className="font-display font-semibold text-white text-[14px]">All Systems Operational</div>
-            <div className="font-mono text-[11px] text-[#666]">10 services · Docker Compose deployment</div>
+            <div className="font-mono text-[11px] text-[#666]">12 services · Docker Compose + Kubernetes deployment</div>
           </div>
         </div>
 
         {/* Key Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
           {[
-            { val: "19", label: "UI Pages", icon: Box },
-            { val: "11", label: "Autonomous Agents", icon: Brain },
-            { val: "150+", label: "Security Tools", icon: Zap },
-            { val: "100+", label: "API Endpoints", icon: Server },
+            { val: "12", label: "UI Pages", icon: Box },
+            { val: "45", label: "Automation Agents", icon: Brain },
+            { val: "30+", label: "Security Tools", icon: Zap },
+            { val: "26", label: "API Endpoints", icon: Server },
           ].map((s) => (
             <div key={s.label} className="p-4 rounded-lg border border-white/[0.04] bg-white/[0.01]">
               <s.icon className="w-4 h-4 text-[#00d4ff] mb-2" />
@@ -73,9 +76,9 @@ export default function Status() {
         <div className="rounded-lg border border-[#a78bfa]/20 bg-[#a78bfa]/[0.03] p-4 mb-10 flex items-start gap-3">
           <Brain className="w-5 h-5 text-[#a78bfa] shrink-0 mt-0.5" />
           <div>
-            <div className="font-display font-semibold text-white text-[14px]">Autonomous Intelligence Active</div>
+            <div className="font-display font-semibold text-white text-[14px]">Agent Fleet Active</div>
             <div className="font-mono text-[11px] text-[#666] mt-1">
-              v1.1.0 — 11 agents running 60-second thinking loops with 5-dimension scanning. Swarm-level awareness enabled. Approve/reject/implement from the Autonomous Dashboard.
+              v1.5.0 — 45 agents across 7 automation, 6 workflow, and 32 specialist categories. Master orchestrator coordinates dependency-aware pipelines. Mission Control dashboard for real-time monitoring.
             </div>
           </div>
           <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#a78bfa]/20 bg-[#a78bfa]/10 text-[#a78bfa] shrink-0">Live</span>

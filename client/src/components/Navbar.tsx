@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import NotificationBell from "./NotificationBell";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -93,6 +94,13 @@ export default function Navbar() {
           >
             Docs
           </a>
+          <a
+            href="/dashboard"
+            className="hidden sm:inline-flex px-3 py-1.5 text-[13px] text-[#888] hover:text-white transition-colors"
+          >
+            Dashboard
+          </a>
+          <NotificationBell />
           <a
             href="/login"
             className="hidden sm:inline-flex px-4 py-1.5 text-[13px] font-medium bg-white text-black rounded hover:bg-white/90 transition-colors"

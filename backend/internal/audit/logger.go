@@ -1,6 +1,8 @@
 package audit
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"log"
 	"os"
@@ -11,12 +13,14 @@ import (
 	"github.com/harbinger-ai/harbinger/internal/models"
 )
 
+// Logger writes audit entries as JSONL to a file for compliance tracking.
 type Logger struct {
 	mu   sync.Mutex
 	file *os.File
 	enc  *json.Encoder
 }
 
+// NewLogger creates a new audit logger writing to the given file path.
 func NewLogger(path string) (*Logger, error) {
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, 0755); err != nil {
@@ -34,6 +38,7 @@ func NewLogger(path string) (*Logger, error) {
 	}, nil
 }
 
+// Log writes an audit entry with the given action, resource, and metadata.
 func (l *Logger) Log(userID, action, resource, ip string, details map[string]interface{}) {
 	entry := models.AuditEntry{
 		ID:        generateID(),
@@ -53,6 +58,7 @@ func (l *Logger) Log(userID, action, resource, ip string, details map[string]int
 	}
 }
 
+// Close flushes and closes the audit log file.
 func (l *Logger) Close() error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -60,15 +66,7 @@ func (l *Logger) Close() error {
 }
 
 func generateID() string {
-	b := make([]byte, 16)
-	_, _ = os.Stdin.Read(b) // fallback
-	return time.Now().Format("20060102150405") + "-" + randomHex(8)
-}
-
-func randomHex(n int) string {
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = "0123456789abcdef"[int(time.Now().UnixNano()%16)]
-	}
-	return string(b)
+	b := make([]byte, 8)
+	_, _ = rand.Read(b)
+	return time.Now().Format("20060102150405") + "-" + hex.EncodeToString(b)
 }

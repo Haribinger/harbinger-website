@@ -79,9 +79,20 @@ func GetUserID(ctx context.Context) string {
 	return ""
 }
 
-func GetUserPlan(ctx context.Context) string {
+func GetEmail(ctx context.Context) string {
+	if v, ok := ctx.Value(ContextEmail).(string); ok {
+		return v
+	}
+	return ""
+}
+
+func GetPlan(ctx context.Context) string {
 	if v, ok := ctx.Value(ContextPlan).(string); ok {
 		return v
 	}
 	return "free"
+}
+
+func GetUserPlan(ctx context.Context) string {
+	return GetPlan(ctx)
 }

@@ -111,6 +111,83 @@ export async function listAgents() {
   return data;
 }
 
+// ── Dashboard ──
+
+export async function getDashboardStats() {
+  const { data } = await api.get("/api/dashboard/stats");
+  return data;
+}
+
+// ── Notifications ──
+
+export async function listNotifications() {
+  const { data } = await api.get("/api/notifications");
+  return data;
+}
+
+export async function markNotificationRead(id: string) {
+  const { data } = await api.post(`/api/notifications/${id}/read`);
+  return data;
+}
+
+// ── Profile & Settings ──
+
+export async function getProfile() {
+  const { data } = await api.get("/api/settings/profile");
+  return data;
+}
+
+export async function updateProfile(profile: { name?: string; email?: string }) {
+  const { data } = await api.put("/api/settings/profile", profile);
+  return data;
+}
+
+// ── API Keys ──
+
+export async function listAPIKeys() {
+  const { data } = await api.get("/api/apikeys");
+  return data;
+}
+
+export async function createAPIKey(name: string, scopes: string[]) {
+  const { data } = await api.post("/api/apikeys", { name, scopes });
+  return data;
+}
+
+export async function revokeAPIKey(id: string) {
+  const { data } = await api.delete(`/api/apikeys/${id}`);
+  return data;
+}
+
+// ── Webhooks ──
+
+export async function listWebhooks() {
+  const { data } = await api.get("/api/webhooks");
+  return data;
+}
+
+export async function createWebhook(url: string, events: string[]) {
+  const { data } = await api.post("/api/webhooks", { url, events });
+  return data;
+}
+
+export async function deleteWebhook(id: string) {
+  const { data } = await api.delete(`/api/webhooks/${id}`);
+  return data;
+}
+
+// ── Findings & Reports ──
+
+export async function listFindings(scanId: string) {
+  const { data } = await api.get(`/api/scans/${scanId}/findings`);
+  return data;
+}
+
+export async function exportReport(scanId: string, format: "json" | "pdf" = "json") {
+  const { data } = await api.get(`/api/scans/${scanId}/report`, { params: { format } });
+  return data;
+}
+
 // ── Health ──
 
 export async function healthCheck() {

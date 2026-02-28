@@ -12,15 +12,28 @@ interface ChangelogEntry {
 const entries: ChangelogEntry[] = [
   {
     date: "Feb 2026",
-    version: "v1.2.0",
+    version: "v1.5.0",
     tag: "feature",
-    title: "Red Team C2 & LOL Integration",
-    description: "Full C2 infrastructure management and Living Off the Land integration. 28 LOL projects from lolol.farm, 5 C2 frameworks, attack chain builder, MITRE ATT&CK mapping, and AI-driven adversary emulation.",
+    title: "Platform UI, Agent Fleet & Mission Control",
+    description: "Massive expansion: 12 pages, 45 automation agents, Mission Control dashboard, user dashboard, settings with API keys and webhooks, scan results viewer, notification system, and 26 backend API endpoints.",
     highlights: [
-      "28 LOL projects — LOLBAS, GTFOBins, LOLDrivers, LOLC2, HijackLibs, WADComs, LOLRMM, and more",
-      "C2 framework management — Mythic, Sliver, Havoc, Cobalt Strike, Custom",
-      "Attack chain builder — compose LOL entries into executable sequences",
-      "MITRE ATT&CK heatmap — technique coverage visualization",
+      "45 Claude Code agents — 7 automation, 6 workflow, 32 specialist",
+      "Mission Control — private orchestration dashboard with pipeline runner",
+      "Dashboard, Settings, Scan Results, Notifications — full user experience",
+      "26 API endpoints — dashboard stats, API keys, webhooks, findings, reports",
+    ],
+  },
+  {
+    date: "Feb 2026",
+    version: "v1.2.0",
+    tag: "agent",
+    title: "Agent Swarm & Docker Orchestration",
+    description: "Production agent swarm with real Docker container orchestration. Go backend with Docker SDK, 5 security tool images, WebSocket streaming, Stripe credits, Kubernetes manifests, and SSRF-safe domain validation.",
+    highlights: [
+      "Docker SDK orchestration — real containers with resource limits",
+      "5 tool images: recon (subfinder, nmap), scanner (nuclei, sqlmap), cloud (prowler), osint (shodan), exploit (impacket)",
+      "WebSocket hub for live scan event streaming",
+      "Kubernetes deployment manifests and build scripts",
     ],
   },
   {

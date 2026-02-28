@@ -70,6 +70,27 @@ func NewRouter(
 		// Credits
 		r.Get("/api/credits", handlers.GetCredits)
 		r.Post("/api/credits/purchase", handlers.PurchaseCredits)
+
+		// Dashboard & User
+		r.Get("/api/dashboard/stats", handlers.DashboardStats)
+		r.Get("/api/notifications", handlers.ListNotifications)
+		r.Post("/api/notifications/{id}/read", handlers.MarkNotificationRead)
+
+		// Settings & API Keys
+		r.Get("/api/settings/profile", handlers.GetProfile)
+		r.Put("/api/settings/profile", handlers.UpdateProfile)
+		r.Get("/api/apikeys", handlers.ListAPIKeys)
+		r.Post("/api/apikeys", handlers.CreateAPIKey)
+		r.Delete("/api/apikeys/{id}", handlers.RevokeAPIKey)
+
+		// Webhooks
+		r.Get("/api/webhooks", handlers.ListWebhooks)
+		r.Post("/api/webhooks", handlers.CreateWebhook)
+		r.Delete("/api/webhooks/{id}", handlers.DeleteWebhook)
+
+		// Findings & Reports
+		r.Get("/api/scans/{id}/findings", handlers.ListFindings)
+		r.Get("/api/scans/{id}/report", handlers.ExportReport)
 	})
 
 	return r
