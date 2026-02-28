@@ -1,6 +1,53 @@
 version: "3.9"
 
 services:
+  # ── Docker Socket Proxy (least-privilege Docker API access) ──
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    environment:
+      # Allow only the operations the API backend actually needs.
+      # All variables default to 0 (deny); set to 1 to permit.
+      CONTAINERS: 1
+      IMAGES: 1
+      NETWORKS: 1
+      POST: 1
+      # Deny everything else (explicit deny for clarity)
+      EVENTS: 0
+      INFO: 0
+      PING: 0
+      VERSION: 0
+      VOLUMES: 0
+      AUTH: 0
+      BUILD: 0
+      COMMIT: 0
+      CONFIGS: 0
+      DISTRIBUTION: 0
+      EXEC: 0
+      GRPC: 0
+      NODES: 0
+      PLUGINS: 0
+      SECRETS: 0
+      SERVICES: 0
+      SESSION: 0
+      SWARM: 0
+      SYSTEM: 0
+      TASKS: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - docker-proxy-net
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: "0.25"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:2375/version || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   # ── Frontend (React + Vite) ──
   frontend:
     build:
@@ -10,18 +57,26 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=http://localhost:8080
-      - VITE_WS_URL=ws://localhost:8080
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8080}
+      - VITE_WS_URL=${VITE_WS_URL:-ws://localhost:8080}
+      - VITE_ANALYTICS_ENDPOINT=${VITE_ANALYTICS_ENDPOINT:-}
+      - VITE_ANALYTICS_WEBSITE_ID=${VITE_ANALYTICS_WEBSITE_ID:-}
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - harbinger-net
     restart: unless-stopped
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 128M
           cpus: "0.5"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
 
   # ── Go API Backend ──
   api:
@@ -31,73 +86,61 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - PORT=8080
-      - DATABASE_URL=postgres://${POSTGRES_USER:-harbinger}:${POSTGRES_PASSWORD}@postgres:5432/harbinger?sslmode=require
+      - PORT=${PORT:-8080}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
       - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRY=${JWT_EXPIRY:-24h}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
-      - DOCKER_HOST=tcp://docker-socket-proxy:2375
-      - DOCKER_NETWORK=harbinger-net
-      - MAX_CONTAINERS=20
-      - RATE_LIMIT_RPM=10
-      - CORS_ORIGIN=http://localhost:3000
-      - DEFAULT_CREDITS=50
+      # Connect through the socket proxy, not the raw socket.
+      - DOCKER_HOST=tcp://docker-proxy:2375
+      - DOCKER_NETWORK=${DOCKER_NETWORK:-harbinger-net}
+      - MAX_CONTAINERS=${MAX_CONTAINERS:-20}
+      - RATE_LIMIT_RPM=${RATE_LIMIT_RPM:-10}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+      - DEFAULT_CREDITS=${DEFAULT_CREDITS:-50}
+      - AUDIT_LOG_PATH=${AUDIT_LOG_PATH:-./logs/audit.jsonl}
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
     volumes:
       - api-logs:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
-      docker-socket-proxy:
-        condition: service_started
+      redis:
+        condition: service_healthy
+      docker-proxy:
+        condition: service_healthy
     networks:
       - harbinger-net
+      - docker-proxy-net
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
     deploy:
       resources:
         limits:
           memory: 512M
           cpus: "1.0"
-
-  # ── Docker Socket Proxy ──
-  docker-socket-proxy:
-    image: tecnativa/docker-socket-proxy:0.2
-    environment:
-      - CONTAINERS=1
-      - IMAGES=1
-      - NETWORKS=1
-      - POST=1
-      - LOG_LEVEL=warning
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - harbinger-net
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 128M
-          cpus: "0.25"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   # ── PostgreSQL ──
   postgres:
-    image: postgres:16.4-alpine
+    image: postgres:16.6-alpine3.21
     environment:
-      POSTGRES_DB: harbinger
-      POSTGRES_USER: ${POSTGRES_USER:-harbinger}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./deploy/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./deploy/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    # Port intentionally NOT published to the host — internal access only.
     networks:
       - harbinger-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-harbinger} -d harbinger"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-harbinger} -d ${POSTGRES_DB:-harbinger}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -110,13 +153,19 @@ services:
 
   # ── Redis (rate limiting & caching) ──
   redis:
-    image: redis:7.4-alpine
+    image: redis:7.4.2-alpine3.21
+    # Port intentionally NOT published to the host — internal access only.
+    command: >
+      redis-server
+      --save 60 1
+      --loglevel warning
+      --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis-data:/data
     networks:
       - harbinger-net
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -124,38 +173,38 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 128M
           cpus: "0.5"
 
-  # ── Security Tool Images (pre-built) ──
+  # ── Security Tool Images (pre-built; activated with --profile build) ──
   recon-tools:
     build:
       context: ./docker/recon
-    image: harbinger/recon:v1.0.0
+    image: harbinger/recon:1.0.0
     profiles: ["build"]
 
   scanner-tools:
     build:
       context: ./docker/scanner
-    image: harbinger/scanner:v1.0.0
+    image: harbinger/scanner:1.0.0
     profiles: ["build"]
 
   cloud-tools:
     build:
       context: ./docker/cloud
-    image: harbinger/cloud:v1.0.0
+    image: harbinger/cloud:1.0.0
     profiles: ["build"]
 
   osint-tools:
     build:
       context: ./docker/osint
-    image: harbinger/osint:v1.0.0
+    image: harbinger/osint:1.0.0
     profiles: ["build"]
 
   exploit-tools:
     build:
       context: ./docker/exploit
-    image: harbinger/exploit:v1.0.0
+    image: harbinger/exploit:1.0.0
     profiles: ["build"]
 
 volumes:
@@ -164,5 +213,10 @@ volumes:
   api-logs:
 
 networks:
+  # External-facing application network.
   harbinger-net:
     driver: bridge
+  # Isolated network for Docker socket proxy — only the api can reach it.
+  docker-proxy-net:
+    driver: bridge
+    internal: true
