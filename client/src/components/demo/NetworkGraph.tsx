@@ -26,10 +26,20 @@ export default function NetworkGraph({
 }: NetworkGraphProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [tick, setTick] = useState(0);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
-    const interval = setInterval(() => setTick((t) => t + 1), 50);
-    return () => clearInterval(interval);
+    let frameCount = 0;
+    const animate = () => {
+      frameCount++;
+      // Update tick roughly every 3 frames (~50ms at 60fps) to match original cadence
+      if (frameCount % 3 === 0) {
+        setTick((t) => t + 1);
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
   useEffect(() => {

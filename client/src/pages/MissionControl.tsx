@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo, useRef } from "react";
 import {
   Shield,
   Zap,
@@ -179,11 +179,22 @@ function GlowCard({ children, className = "" }: { children: React.ReactNode; cla
 
 // ── Components ──
 
-function Header() {
+const Header = memo(function Header() {
   const [time, setTime] = useState(new Date());
+  const rafRef = useRef<number>(0);
+  const lastSecRef = useRef<number>(-1);
+
   useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(t);
+    const tick = () => {
+      const now = new Date();
+      if (now.getSeconds() !== lastSecRef.current) {
+        lastSecRef.current = now.getSeconds();
+        setTime(now);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
   return (
@@ -215,7 +226,7 @@ function Header() {
       </div>
     </div>
   );
-}
+});
 
 function PipelinePanel({
   steps,
@@ -489,6 +500,35 @@ export default function MissionControl() {
   const [pipelineRunning, setPipelineRunning] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
 
+  // Track all active timers so they can be cleared on unmount
+  const timerRefs = useRef<Set<number>>(new Set());
+
+  const safeSetTimeout = useCallback((fn: () => void, delay: number) => {
+    const id = window.setTimeout(() => {
+      timerRefs.current.delete(id);
+      fn();
+    }, delay);
+    timerRefs.current.add(id);
+    return id;
+  }, []);
+
+  const safeSetInterval = useCallback((fn: () => void, delay: number) => {
+    const id = window.setInterval(fn, delay);
+    timerRefs.current.add(id);
+    return id;
+  }, []);
+
+  // Clear all timers on unmount
+  useEffect(() => {
+    return () => {
+      timerRefs.current.forEach((id) => {
+        window.clearTimeout(id);
+        window.clearInterval(id);
+      });
+      timerRefs.current.clear();
+    };
+  }, []);
+
   const addLog = useCallback((msg: string) => {
     const ts = new Date().toLocaleTimeString("en-US", { hour12: false });
     setLogs((prev) => [...prev, `[${ts}] ${msg}`]);
@@ -520,11 +560,12 @@ export default function MissionControl() {
 
       // Simulate progress
       let progress = 0;
-      const progressInterval = setInterval(() => {
+      const progressInterval = safeSetInterval(() => {
         progress += Math.random() * 15 + 5;
         if (progress >= 100) {
           progress = 100;
-          clearInterval(progressInterval);
+          window.clearInterval(progressInterval);
+          timerRefs.current.delete(progressInterval);
 
           const findings = Math.floor(Math.random() * 12);
           const duration = `${(Math.random() * 8 + 2).toFixed(1)}s`;
@@ -538,7 +579,7 @@ export default function MissionControl() {
           );
           addLog(`Phase ${stepIndex + 1}: ${step.label} — complete (${findings} items, ${duration})`);
           stepIndex++;
-          setTimeout(runStep, 400);
+          safeSetTimeout(runStep, 400);
         } else {
           setPipelineSteps((prev) =>
             prev.map((s, i) => (i === stepIndex ? { ...s, progress: Math.round(progress) } : s))
@@ -547,8 +588,8 @@ export default function MissionControl() {
       }, 300);
     };
 
-    setTimeout(runStep, 800);
-  }, [pipelineRunning, addLog]);
+    safeSetTimeout(runStep, 800);
+  }, [pipelineRunning, addLog, safeSetInterval, safeSetTimeout]);
 
   const handleQuickAction = useCallback(
     (action: string) => {

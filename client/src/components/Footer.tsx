@@ -9,6 +9,8 @@ export default function Footer() {
                 src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663114013319/TAqStkfvjTyDDNXQ.png"
                 alt="Harbinger"
                 className="w-6 h-6 object-contain"
+                loading="lazy"
+                decoding="async"
               />
               <span className="font-display font-semibold text-white text-[14px]">Harbinger</span>
             </div>

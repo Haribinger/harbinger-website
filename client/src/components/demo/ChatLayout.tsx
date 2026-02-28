@@ -1,9 +1,9 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useCredits } from "@/lib/demo/credits";
-import { hydrateScenario, matchScenario } from "@/lib/demo/scenarios";
-import { useScenarioEngine } from "@/lib/demo/scenario-engine";
-import type { Finding, Scenario } from "@/lib/demo/types";
+import { useRealEngine } from "@/lib/demo/real-engine";
+import type { ScanPreset } from "@/lib/demo/scan-presets";
+import type { Finding } from "@/lib/demo/types";
 import {
   ChevronDown,
   ChevronUp,
@@ -20,6 +20,7 @@ import {
   Minimize2,
   RotateCcw,
   Download,
+  AlertCircle,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -43,6 +44,33 @@ interface PanelTab {
   active?: boolean;
 }
 
+/** Extract target domain from a free-text scan request */
+function extractTarget(text: string): string {
+  // Try common domain patterns first
+  const domainMatch = text.match(
+    /(?:scan\s+|target\s+|pentest\s+|audit\s+)?([a-zA-Z0-9][-a-zA-Z0-9]*(?:\.[a-zA-Z]{2,})+)/i
+  );
+  if (domainMatch) return domainMatch[1];
+
+  // IP address
+  const ipMatch = text.match(/\b(\d{1,3}(?:\.\d{1,3}){3})\b/);
+  if (ipMatch) return ipMatch[1];
+
+  // Last word
+  const words = text.trim().split(/\s+/);
+  return words[words.length - 1] || "example.com";
+}
+
+/** Infer scan type from free-text input */
+function inferScanType(text: string): "recon" | "vuln_scan" | "full_audit" | "cloud_audit" | "osint" {
+  const lower = text.toLowerCase();
+  if (lower.includes("full") || lower.includes("audit") || lower.includes("comprehensive")) return "full_audit";
+  if (lower.includes("vuln") || lower.includes("cve") || lower.includes("exploit")) return "vuln_scan";
+  if (lower.includes("osint") || lower.includes("intel") || lower.includes("threat")) return "osint";
+  if (lower.includes("cloud") || lower.includes("aws") || lower.includes("azure")) return "cloud_audit";
+  return "recon";
+}
+
 export default function ChatLayout() {
   const isMobile = useIsMobile();
   const { remaining, max, spend, canAfford } = useCredits();
@@ -54,10 +82,12 @@ export default function ChatLayout() {
     networkConnections,
     browserState,
     dockerLogs,
-    playScenario,
+    connectionError,
+    startScan,
     cancel,
     reset,
-  } = useScenarioEngine();
+  } = useRealEngine();
+
   const [exhaustedOpen, setExhaustedOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
@@ -80,42 +110,41 @@ export default function ChatLayout() {
     [messages]
   );
 
-  const runScenario = useCallback(
-    (scenario: Scenario, userMessage?: string, target?: string) => {
-      if (!canAfford(scenario.cost)) {
+  const runScan = useCallback(
+    (target: string, scanType: string, userMessage: string) => {
+      if (!canAfford(1)) {
         setExhaustedOpen(true);
         return;
       }
-      const ok = spend(scenario.cost);
+      const ok = spend(1);
       if (!ok) {
         setExhaustedOpen(true);
         return;
       }
-      const t = target ?? "example.com";
-      const hydrated = hydrateScenario(scenario, t);
       setSidebarOpen(false);
       setRightDrawerOpen(false);
       setBottomPanelCollapsed(false);
       setRightPanelCollapsed(false);
       setActivePanel("chat");
-      playScenario(hydrated, userMessage);
+      void startScan(target, scanType, userMessage);
     },
-    [canAfford, spend, playScenario]
+    [canAfford, spend, startScan]
   );
 
   const handlePresetSelect = useCallback(
-    (scenario: Scenario) => {
-      runScenario(scenario, scenario.title, "example.com");
+    (preset: ScanPreset) => {
+      runScan(preset.defaultTarget, preset.scanType, `${preset.title} — ${preset.defaultTarget}`);
     },
-    [runScenario]
+    [runScan]
   );
 
   const handleFreeText = useCallback(
     (text: string) => {
-      const { scenario, target } = matchScenario(text);
-      runScenario(scenario, text, target);
+      const target = extractTarget(text);
+      const scanType = inferScanType(text);
+      runScan(target, scanType, text);
     },
-    [runScenario]
+    [runScan]
   );
 
   const handleCancel = useCallback(() => {
@@ -190,26 +219,26 @@ export default function ChatLayout() {
       activeAgents={activeAgents}
       credits={{ remaining, max }}
       canAfford={canAfford}
-      onSelectScenario={handlePresetSelect}
+      onSelectPreset={handlePresetSelect}
       isPlaying={isPlaying}
       containers={containers}
     />
   );
 
   return (
-    <div className="flex h-screen bg-[#0a0a0f] overflow-hidden relative demo-scanline">
+    <div className="flex h-[100dvh] w-screen bg-[#0a0a0f] overflow-hidden relative demo-scanline">
       {/* Desktop left sidebar */}
       {!isMobile && (
-        <div className="w-[260px] shrink-0 border-r border-white/[0.06] bg-[#08080d] overflow-hidden">
+        <div className="w-[260px] shrink-0 border-r border-white/[0.06] bg-[#08080d] overflow-hidden flex flex-col">
           {sidebar}
         </div>
       )}
 
       {/* Main centre area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile top bar */}
         {isMobile && (
-          <div className="flex items-center gap-3 px-4 h-12 border-b border-white/[0.06] bg-[#08080d]">
+          <div className="flex items-center gap-3 px-4 h-12 border-b border-white/[0.06] bg-[#08080d] shrink-0">
             <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
               <SheetTrigger asChild>
                 <button className="p-1 text-[#888] hover:text-white">
@@ -267,9 +296,28 @@ export default function ChatLayout() {
           </div>
         )}
 
-        {/* ═══ Panel Tabs Bar + Status + Settings ═══ */}
+        {/* Connection error banner */}
+        <AnimatePresence>
+          {connectionError && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="shrink-0 overflow-hidden"
+            >
+              <div className="flex items-center gap-2 px-4 py-2 bg-[#ef4444]/10 border-b border-[#ef4444]/20">
+                <AlertCircle className="w-3.5 h-3.5 text-[#ef4444] shrink-0" />
+                <span className="text-[11px] font-mono text-[#ef4444] flex-1 truncate">
+                  {connectionError}
+                </span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Panel Tabs Bar + Status + Settings */}
         {hasMessages && (
-          <div className="border-b border-white/[0.06] bg-[#08080d]/80 backdrop-blur-sm">
+          <div className="shrink-0 border-b border-white/[0.06] bg-[#08080d]/80 backdrop-blur-sm">
             {/* Top row: status + settings */}
             <div className="flex items-center gap-2 px-4 py-1.5">
               {/* Live status indicator */}
@@ -321,7 +369,7 @@ export default function ChatLayout() {
                   <button
                     onClick={handleReset}
                     className="p-1.5 text-[#555] hover:text-[#888] transition-colors rounded hover:bg-white/[0.03]"
-                    title="Reset demo"
+                    title="Reset"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                   </button>
@@ -494,7 +542,20 @@ export default function ChatLayout() {
                           {/* Export report */}
                           <button
                             className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-left hover:bg-white/[0.03] transition-colors"
-                            onClick={() => setSettingsOpen(false)}
+                            onClick={() => {
+                              if (findings.length > 0) {
+                                const blob = new Blob([JSON.stringify(findings, null, 2)], {
+                                  type: "application/json",
+                                });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = "harbinger-findings.json";
+                                a.click();
+                                URL.revokeObjectURL(url);
+                              }
+                              setSettingsOpen(false);
+                            }}
                           >
                             <Download className="w-3.5 h-3.5 text-[#555]" />
                             <span className="text-[11px] text-[#999]">
@@ -564,17 +625,20 @@ export default function ChatLayout() {
           </div>
         )}
 
-        {/* ═══ Main Content Area ═══ */}
-        <div className="flex-1 flex flex-col min-h-0">
-          <div className="flex-1 min-h-0">
+        {/* Main Content Area */}
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          {/* Panel content */}
+          <div className="flex-1 min-h-0 overflow-hidden">
             {/* Chat panel */}
             {activePanel === "chat" && (
               <>
                 {hasMessages ? (
-                  <ChatMessages messages={messages} />
+                  <div className="h-full overflow-hidden flex flex-col">
+                    <ChatMessages messages={messages} />
+                  </div>
                 ) : (
-                  <div className="h-full flex items-center justify-center px-4 demo-grid-bg relative">
-                    <div className="text-center max-w-2xl relative z-10">
+                  <div className="h-full flex items-center justify-center px-4 demo-grid-bg relative overflow-y-auto">
+                    <div className="text-center max-w-2xl relative z-10 py-8">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -593,7 +657,7 @@ export default function ChatLayout() {
                           <div className="absolute inset-0 bg-[#00d4ff]/20 rounded-full blur-xl" />
                         </div>
                         <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">
-                          Agent Swarm Demo
+                          Agent Swarm
                         </h2>
                       </motion.div>
                       <motion.p
@@ -602,9 +666,9 @@ export default function ChatLayout() {
                         transition={{ delay: 0.2, duration: 0.5 }}
                         className="text-[14px] text-[#666] mb-8 max-w-md mx-auto leading-relaxed"
                       >
-                        Watch 11 autonomous agents spawn Docker containers,
-                        run security tools, browse targets, and collaborate
-                        in real time.
+                        11 autonomous agents spawn real Docker containers,
+                        run security tools, and stream live results via
+                        WebSocket.
                       </motion.p>
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
@@ -632,7 +696,7 @@ export default function ChatLayout() {
                   <EmptyPanel
                     icon="🐳"
                     title="Docker Console"
-                    description="Container logs and tool output will appear here when a scenario runs."
+                    description="Container logs and tool output will appear here when a scan runs."
                   />
                 )}
               </div>
@@ -697,7 +761,7 @@ export default function ChatLayout() {
             activePanel === "chat" &&
             hasMessages &&
             hasActiveVisuals && (
-              <div className="border-t border-white/[0.06]">
+              <div className="shrink-0 border-t border-white/[0.06]">
                 <button
                   onClick={() =>
                     setBottomPanelCollapsed(!bottomPanelCollapsed)
@@ -705,7 +769,7 @@ export default function ChatLayout() {
                   className="w-full flex items-center gap-2 px-4 py-1 bg-[#08080d] hover:bg-white/[0.02] transition-colors"
                 >
                   <span className="text-[10px] font-mono text-[#555]">
-                    🐳 Docker Console
+                    Docker Console
                   </span>
                   {runningContainers.length > 0 && (
                     <span className="text-[9px] font-mono text-[#4ade80]">
@@ -748,6 +812,7 @@ export default function ChatLayout() {
           onCancel={handleCancel}
           isPlaying={isPlaying}
           disabled={remaining <= 0}
+          connectionError={connectionError}
         />
       </div>
 
@@ -763,7 +828,7 @@ export default function ChatLayout() {
           >
             <div className="w-[300px] flex flex-col h-full overflow-y-auto">
               {/* Right panel header */}
-              <div className="px-4 py-3 border-b border-white/[0.06]">
+              <div className="px-4 py-3 border-b border-white/[0.06] shrink-0">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-mono text-[#555] uppercase tracking-wider">
                     Intel Panel

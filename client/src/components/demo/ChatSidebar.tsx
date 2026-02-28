@@ -1,6 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { agentList } from "@/lib/demo/agents";
-import type { AgentId, DockerContainer, Scenario } from "@/lib/demo/types";
+import type { AgentId, DockerContainer } from "@/lib/demo/types";
+import type { ScanPreset } from "@/lib/demo/scan-presets";
 import { motion, AnimatePresence } from "framer-motion";
 import AgentAvatar from "./AgentAvatar";
 import CreditsDisplay from "./CreditsDisplay";
@@ -10,7 +11,7 @@ interface ChatSidebarProps {
   activeAgents: Map<AgentId, string>;
   credits: { remaining: number; max: number };
   canAfford: (cost: number) => boolean;
-  onSelectScenario: (scenario: Scenario) => void;
+  onSelectPreset: (preset: ScanPreset) => void;
   isPlaying: boolean;
   containers: DockerContainer[];
 }
@@ -42,7 +43,7 @@ export default function ChatSidebar({
   activeAgents,
   credits,
   canAfford,
-  onSelectScenario,
+  onSelectPreset,
   isPlaying,
   containers,
 }: ChatSidebarProps) {
@@ -72,7 +73,7 @@ export default function ChatSidebar({
               Command Centre
             </div>
             <div className="text-[10px] text-[#555]">
-              {isPlaying ? "Mission Active" : "Awaiting Orders"}
+              {isPlaying ? "Scan Active" : "Awaiting Orders"}
             </div>
           </div>
         </div>
@@ -201,13 +202,13 @@ export default function ChatSidebar({
         )}
       </AnimatePresence>
 
-      {/* Scenario Presets */}
+      {/* Scan Presets */}
       <div className="px-4 pb-4">
         <div className="text-[10px] font-mono text-[#555] uppercase tracking-wider mb-2">
-          Scenarios
+          Scan Types
         </div>
         <ScenarioPresets
-          onSelect={onSelectScenario}
+          onSelect={onSelectPreset}
           disabled={isPlaying}
           canAfford={canAfford}
           compact

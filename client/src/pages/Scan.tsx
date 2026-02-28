@@ -73,7 +73,8 @@ export default function Scan() {
 
   const addLog = useCallback((type: string, text: string, agentId?: string, color?: string) => {
     const id = `log-${logIdCounter.current++}`;
-    setLogs((prev) => [...prev, { id, type, agentId, text, timestamp: new Date(), color }]);
+    const entry: LogEntry = { id, type, agentId, text, timestamp: new Date(), color };
+    setLogs((prev) => prev.concat(entry));
   }, []);
 
   // WebSocket event handling
@@ -138,12 +139,12 @@ export default function Scan() {
           break;
 
         case "finding":
-          setFindings((prev) => [...prev, {
+          setFindings((prev) => prev.concat({
             title: data.title,
             severity: data.severity,
             target: data.target,
             agent: agentId || "unknown",
-          }]);
+          }));
           addLog("finding", `[${(data.severity || "").toUpperCase()}] ${data.title}`, agentId,
             data.severity === "critical" ? "#ef4444" : data.severity === "high" ? "#f59e0b" : "#4ade80"
           );
