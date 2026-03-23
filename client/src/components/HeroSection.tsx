@@ -97,7 +97,7 @@ export default function HeroSection() {
           <div>
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-[#00d4ff]/20 bg-[#00d4ff]/[0.04] mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
-              <span className="font-mono text-[11px] text-[#00d4ff]/80">v1.1 — Autonomous Intelligence</span>
+              <span className="font-mono text-[11px] text-[#00d4ff]/80">v2.0.0 — Autonomous Security OS</span>
             </div>
 
             <div className="flex items-center gap-4 mb-1">
@@ -111,28 +111,21 @@ export default function HeroSection() {
               </h1>
             </div>
             <p className="mt-2 text-[17px] sm:text-[19px] text-[#00d4ff] font-display font-medium tracking-tight">
-              Autonomous pentesting agents you can actually see thinking.
+              Autonomous Security Operating System
             </p>
             <p className="mt-5 text-[15px] text-[#777] leading-[1.7] max-w-md">
-              11 specialized agents orchestrate 150+ security tools via MCP. Self-optimizing
-              thinking loops analyze, improve, and adapt — with full observability.
+              12 agents. 68 tools. Mission-driven execution. Zero hardcoded limits.
+              ReAct reasoning loops, parallel DAG scheduling, and a plugin registry
+              where every agent, tool, and template is user-configurable.
               100% local-first. No black boxes.
             </p>
 
             <div className="flex flex-wrap gap-3 mt-8">
               <a
-                href="#about"
-                onClick={(e) => { e.preventDefault(); document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" }); }}
+                href="/docs"
                 className="px-5 py-2.5 bg-white text-[#0a0a0f] text-[13px] font-semibold rounded hover:bg-white/90 transition-colors"
               >
                 Get Started
-              </a>
-              <a
-                href="/demo"
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium text-[#4ade80] border border-[#4ade80]/20 rounded hover:bg-[#4ade80]/[0.06] hover:border-[#4ade80]/30 transition-colors"
-              >
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                Try Interactive Demo
               </a>
               <a
                 href="https://github.com/Haribinger/Harbinger"
@@ -149,8 +142,8 @@ export default function HeroSection() {
             <div className="flex flex-wrap gap-8 sm:gap-10 mt-12 pt-8 border-t border-white/[0.04]">
               {[
                 { val: "52s", label: "To Critical Finding" },
-                { val: "150+", label: "Tools via MCP" },
-                { val: "11", label: "Autonomous Agents" },
+                { val: "68", label: "Security Tools" },
+                { val: "12", label: "Autonomous Agents" },
                 { val: "100%", label: "Local-First" },
               ].map((s) => (
                 <div key={s.label}>

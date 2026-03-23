@@ -1,5 +1,5 @@
 import SectionWrapper, { SectionDesc, SectionLabel, SectionTitle } from "./SectionWrapper";
-import { Activity, Box, Brain, Eye, GitBranch, Globe, Lock, Network, Radio, Shield, Target, Terminal, Users, Workflow, Zap } from "lucide-react";
+import { Box, Brain, Database, Shield, Terminal, Users, Wrench } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface Feature {
@@ -9,22 +9,12 @@ interface Feature {
 }
 
 const features: Feature[] = [
-  { icon: Users, title: "11-Agent Swarm", desc: "PATHFINDER, BREACH, PHANTOM, SPECTER, CIPHER, SCRIBE, SAM, BRIEF, SAGE, LENS, MAINTAINER — each with personality, tools, and autonomous thinking loops." },
-  { icon: Brain, title: "Autonomous Intelligence", desc: "Every agent runs a 60-second thinking loop. Scans 5 dimensions, calculates efficiency ratios, proposes automations. Approve, reject, or implement from the dashboard." },
-  { icon: Workflow, title: "Workflow Graph Engine", desc: "Visual directed graph editor with 6 node types, parallel branches, conditions, approvals, handoffs. Built on @xyflow/react." },
-  { icon: Terminal, title: "150+ Security Tools", desc: "Nuclei, SQLMap, Subfinder, httpx, Prowler, Nikto, dirsearch, and 140+ more — all via 4 MCP plugin servers." },
-  { icon: Network, title: "MCP-First Architecture", desc: "HexStrike, PentAGI, RedTeam, and MCP-UI servers. Compatible with Claude Desktop, Cursor, and any MCP client." },
-  { icon: Eye, title: "Observable by Design", desc: "19 dashboard pages, real-time event streams, agent timeline views, graph views, cost tracking, autonomous thought log. No black boxes." },
-  { icon: Lock, title: "100% Local-First", desc: "9 Docker services, pgvector, Redis, Neo4j. Runs entirely local with Ollama or LM Studio. Your data stays yours." },
-  { icon: Shield, title: "Production Security", desc: "OAuth CSRF protection, TOTP verification, JWT auth, error sanitization, Docker action whitelist, rate limiting, request body limits." },
-  { icon: Box, title: "Docker Isolation", desc: "Each agent runs in a fresh container with CPU/memory limits and network isolation. Configurable per-agent resource profiles." },
-  { icon: Zap, title: "Smart Model Router", desc: "5 complexity tiers, local-first with cloud fallback, per-agent overrides. CIPHER uses Opus, PATHFINDER uses Sonnet, MAINTAINER stays local." },
-  { icon: Globe, title: "Multi-Channel", desc: "Control from Web UI, Telegram, Discord, GitHub webhooks, CLI, or any MCP client. One orchestrator, many surfaces." },
-  { icon: Activity, title: "Meta-Cognition", desc: "Agents monitor their own performance, identify improvements, calculate cost-benefit ratios, and coordinate through swarm awareness." },
-  { icon: GitBranch, title: "Red Team C2", desc: "Mythic, Sliver, Havoc, Cobalt Strike, or custom C2. Listener management, payload generation, implant tracking, and attack chain orchestration." },
-  { icon: Radio, title: "Realtime Streaming", desc: "SSE event bus with 1,000-event ring buffer. Multi-operator sessions, agent heartbeats, command output streaming, and global kill switch — sub-100ms latency." },
-  { icon: Brain, title: "Agent Learning Engine", desc: "Technique scoring, campaign tracking, LOL discovery pipeline, per-agent performance metrics, and AI recommendations with 4 heuristic engines." },
-  { icon: Target, title: "Safety Controls", desc: "Target validation with 8 built-in rules, scope enforcement with exclude-always-wins, per-operation rate limiting, audit trails, and approval workflows." },
+  { icon: Brain, title: "Execution Engine", desc: "Mission to Task to SubTask to Action with ReAct loops. Agents reason, act, and observe in real containers. Parallel DAG scheduling executes independent tasks simultaneously." },
+  { icon: Users, title: "12 Specialized Agents", desc: "PATHFINDER (recon), BREACH (exploit), SAM (code), SCRIBE (reports), and 8 more. Each with a dedicated Docker image, personality, and autonomous thinking loops." },
+  { icon: Terminal, title: "68 Security Tools", desc: "ProjectDiscovery suite, Kali tools, OSINT, dev tools across 5 purpose-built Docker images. Every tool callable via MCP or direct execution." },
+  { icon: Database, title: "Knowledge Graph", desc: "Neo4j entities (hosts, services, vulns) plus pgvector semantic memory. Agents learn across missions and share context through a persistent knowledge layer." },
+  { icon: Wrench, title: "Plugin Registry", desc: "Nothing hardcoded. Configure agents, tools, templates, and settings via API. User-addable everything — bring your own tools, models, and workflows." },
+  { icon: Shield, title: "Self-Healing", desc: "Detects container failures, LLM-powered diagnosis, auto-restarts. Kill switch for emergencies. Scope enforcement and safety controls built into every operation." },
 ];
 
 export default function FeaturesSection() {
@@ -33,7 +23,7 @@ export default function FeaturesSection() {
       <SectionLabel>Capabilities</SectionLabel>
       <SectionTitle>Everything you need. Nothing you don't.</SectionTitle>
       <SectionDesc>
-        Built for professionals who need orchestrated workflows, full visibility, and local-first operation.
+        A mission-driven execution engine built for professionals who need autonomous agents, full visibility, and local-first operation.
       </SectionDesc>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px mt-14 bg-white/[0.04] rounded-lg overflow-hidden">

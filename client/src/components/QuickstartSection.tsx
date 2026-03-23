@@ -17,24 +17,24 @@ function CopyBtn({ text }: { text: string }) {
 const steps = [
   {
     step: "1",
-    title: "Clone & configure",
-    code: `git clone https://github.com/Haribinger/Harbinger.git
+    title: "Clone & launch",
+    code: `git clone https://github.com/Haribinger/Harbinger
 cd Harbinger
-cp .env.example .env  # edit with your GitHub OAuth keys`,
+docker compose up --build`,
+    note: "Pulls all images, builds the stack, and starts every service. Open http://localhost:8980 when ready.",
   },
   {
     step: "2",
-    title: "Start the stack",
-    code: `docker compose up -d`,
-    note: "Starts 9 services: PostgreSQL, Redis, Neo4j, Go backend, React frontend, 4 MCP plugins, and Nginx.",
+    title: "Health check",
+    code: `harbinger doctor          # verify all services are green`,
+    note: "Checks Docker containers, database connections, MCP plugins, and agent readiness.",
   },
   {
     step: "3",
-    title: "Open the command center",
-    code: `# Frontend:  http://localhost:3000
-# Dashboard: http://localhost:80
-# Backend:   http://localhost:8080/api/health`,
-    note: "Login with GitHub OAuth, Device Flow, or a personal access token.",
+    title: "Run your first mission",
+    code: `harbinger mission start "pentest example.com"
+harbinger agents watch`,
+    note: "The execution engine decomposes the mission into tasks, assigns agents, and streams progress in real time.",
   },
 ];
 
@@ -42,9 +42,9 @@ export default function QuickstartSection() {
   return (
     <SectionWrapper id="quickstart">
       <SectionLabel>Quickstart</SectionLabel>
-      <SectionTitle>Up and running in 60 seconds.</SectionTitle>
+      <SectionTitle>Up and running in 3 commands.</SectionTitle>
       <SectionDesc>
-        Three commands. Nine services. Full offensive security platform.
+        Clone, compose, run. Full autonomous security platform.
       </SectionDesc>
 
       <div className="mt-14 space-y-6 max-w-2xl">
@@ -73,12 +73,9 @@ export default function QuickstartSection() {
             { name: "PostgreSQL", port: "5432", color: "#336791" },
             { name: "Redis", port: "6379", color: "#dc382d" },
             { name: "Neo4j", port: "7474", color: "#008cc1" },
-            { name: "Go API", port: "8080", color: "#00add8" },
-            { name: "React UI", port: "3000", color: "#61dafb" },
-            { name: "HexStrike", port: "3001", color: "#f59e0b" },
-            { name: "PentAGI", port: "3002", color: "#a78bfa" },
-            { name: "MCP-UI", port: "3003", color: "#4ade80" },
-            { name: "RedTeam", port: "3004", color: "#ef4444" },
+            { name: "FastAPI", port: "8080", color: "#009688" },
+            { name: "React UI", port: "8980", color: "#61dafb" },
+            { name: "MCP Hub", port: "3001", color: "#f59e0b" },
             { name: "Nginx", port: "80", color: "#009639" },
           ].map((svc) => (
             <div key={svc.name} className="rounded border border-white/[0.06] bg-white/[0.02] p-2.5 text-center hover:bg-white/[0.04] transition-colors">

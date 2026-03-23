@@ -6,15 +6,9 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 const Home = lazy(() => import("./pages/Home"));
-const Demo = lazy(() => import("./pages/Demo"));
-const Scan = lazy(() => import("./pages/Scan"));
 const Docs = lazy(() => import("./pages/Docs"));
 const Status = lazy(() => import("./pages/Status"));
 const Auth = lazy(() => import("./pages/Auth"));
-const Pricing = lazy(() => import("./pages/Pricing"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Settings = lazy(() => import("./pages/Settings"));
-const ScanResults = lazy(() => import("./pages/ScanResults"));
 const MissionControl = lazy(() => import("./pages/MissionControl"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -34,14 +28,8 @@ function Router() {
     <Suspense fallback={<RouteLoadingFallback />}>
       <Switch>
         <Route path={"/"} component={Home} />
-        <Route path={"/demo"} component={Demo} />
-        <Route path={"/scan"} component={Scan} />
         <Route path={"/docs"} component={Docs} />
         <Route path={"/status"} component={Status} />
-        <Route path={"/pricing"} component={Pricing} />
-        <Route path={"/dashboard"} component={Dashboard} />
-        <Route path={"/settings"} component={Settings} />
-        <Route path={"/scan/:id"} component={ScanResults} />
         <Route path={"/mission-control"} component={MissionControl} />
         <Route path={"/login"} component={Auth} />
         <Route path={"/signup"} component={Auth} />
