@@ -7,9 +7,6 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 
 const Home = lazy(() => import("./pages/Home"));
 const Docs = lazy(() => import("./pages/Docs"));
-const Status = lazy(() => import("./pages/Status"));
-const Auth = lazy(() => import("./pages/Auth"));
-const MissionControl = lazy(() => import("./pages/MissionControl"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function RouteLoadingFallback() {
@@ -29,10 +26,6 @@ function Router() {
       <Switch>
         <Route path={"/"} component={Home} />
         <Route path={"/docs"} component={Docs} />
-        <Route path={"/status"} component={Status} />
-        <Route path={"/mission-control"} component={MissionControl} />
-        <Route path={"/login"} component={Auth} />
-        <Route path={"/signup"} component={Auth} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

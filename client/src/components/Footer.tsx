@@ -39,7 +39,7 @@ export default function Footer() {
             <div className="space-y-2">
               <a href="/docs" className="block text-[12px] text-[#666] hover:text-white transition-colors">Documentation</a>
               <a href="/docs#api-reference" className="block text-[12px] text-[#666] hover:text-white transition-colors">API Reference</a>
-              <a href="/status" className="block text-[12px] text-[#666] hover:text-white transition-colors">System Status</a>
+              <a href="https://github.com/Haribinger/Harbinger/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="block text-[12px] text-[#666] hover:text-white transition-colors">License</a>
             </div>
           </div>
         </div>
